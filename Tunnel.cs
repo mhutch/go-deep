@@ -8,6 +8,7 @@ namespace WhatsInTheMountain
 	public class Tunnel : DrawableGameComponent
 	{
 		const int tunnelDepth = 10;
+		const float layerDepth = -1, layerRadius = 1;
 
 		float speed = 1.2f; //units / s
 		float fov = 70; //degrees
@@ -16,7 +17,7 @@ namespace WhatsInTheMountain
 		BasicEffect basicEffect;
 		List<Texture2D> wallTextures = new List<Texture2D> ();
 		Texture2D dogTexture;
-		TunnelLayer [] layers = new TunnelLayer [tunnelDepth];
+
 		Matrix view, projection;
 		Vector3 cameraPosition;
 		VertexPositionTexture[] quadVertices = new VertexPositionTexture[4];
@@ -24,7 +25,11 @@ namespace WhatsInTheMountain
 		Vector3[] unitOctagon = ComputeUnitOctagon ();
 		short[] clockwiseQuadIndices = { 0, 1, 2, 2, 1, 3 };
 
+		Random random = new Random ();
+
 		float tunnelOffset, dogAnimationOffset;
+		TunnelLayer [] layers = new TunnelLayer [tunnelDepth];
+		int layerOffset;
 
 		public Tunnel (Game game) : base (game)
 		{
@@ -65,7 +70,16 @@ namespace WhatsInTheMountain
 			}
 			dogTexture = Game.Content.Load<Texture2D> ("dog_run");
 
+			for (int i = 0; i < layers.Length; i++) {
+				layers [i] = GenerateLayer ();
+			}
+
 			base.LoadContent ();
+		}
+
+		TunnelLayer GenerateLayer ()
+		{
+			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.0001f);
 		}
 
 		public override void Update (GameTime gameTime)
@@ -77,21 +91,23 @@ namespace WhatsInTheMountain
 		{
 			GraphicsDevice.Clear (Color.Black);
 
-			const float depth = -1, radius = 1;
+			tunnelOffset = (tunnelOffset + speed * (float)gameTime.ElapsedGameTime.TotalSeconds);
 
-			tunnelOffset = (tunnelOffset + speed * (float)gameTime.ElapsedGameTime.TotalSeconds) %1f;
+			if (tunnelOffset > 1f) {
+				float floor = (float) Math.Floor (tunnelOffset);
+				tunnelOffset = tunnelOffset - floor;
+				layerOffset = (layerOffset + (int)floor) % layers.Length;
+
+				for (int i = 1; i <= (int)floor; i++) {
+					var offsetIndex = (layerOffset - i + layers.Length) % layers.Length;
+					layers [offsetIndex] = GenerateLayer ();
+				}
+			}
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
-				var layer = layers [i];
-				var d = i * depth + tunnelOffset;
-				for (int j = 0; j < 8; j++) {
-					basicEffect.Texture = wallTextures [layer.GetTextureID (j)];
-					FillOctagonSectionVertices (quadVertices, d, d + depth, radius, j);
-					foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
-						pass.Apply ();
-						GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (PrimitiveType.TriangleList, quadVertices, 0, 4, clockwiseQuadIndices, 0, 2);
-					}
-				}
+				var offsetIndex = (layerOffset + i + layers.Length) % layers.Length;
+				var layer = layers [offsetIndex];
+				RenderLayer (i, layer);
 			}
 
 			int dogFrameCount = 10;
@@ -103,6 +119,22 @@ namespace WhatsInTheMountain
 			RenderAnimatedFlatQuad (new Vector3 (0, - (1f - distanceAboveFloor), dogDistance), dogTexture, 0.5f, 0.5f, dogFrameCount, dogFrame);
 
 			base.Draw (gameTime);
+		}
+
+		void RenderLayer (int depthIndex, TunnelLayer layer)
+		{
+			var d = depthIndex * layerDepth + tunnelOffset;
+			for (int j = 0; j < 8; j++) {
+				basicEffect.Texture = wallTextures [layer.GetTextureID (j)];
+				FillOctagonSectionVertices (quadVertices, d, d + layerDepth, layerRadius, j);
+				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
+					pass.Apply ();
+					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (
+						PrimitiveType.TriangleList,
+						quadVertices, 0, 4,
+						clockwiseQuadIndices, 0, 2);
+				}
+			}
 		}
 
 		void RenderFlatQuad (Vector3 origin, Texture2D texture, float width, float height)
@@ -230,20 +262,51 @@ namespace WhatsInTheMountain
 
 	public unsafe struct TunnelLayer
 	{
-		fixed int textureID [8];
-		fixed int obstacleID [8];
+		const int corners = 8;
+		fixed int textureID [corners];
+		fixed int obstacleID [corners];
+		fixed float cornerOffsets [corners * 3];
 
-		public unsafe int GetTextureID (int layer)
+		public TunnelLayer (Random random, int texMin, int texMax, int obMin, int obMax, float offsetScale)
 		{
 			fixed (int *buf = textureID) {
-				return buf [layer];
+				for (int i = 0; i < corners; i++) {
+					buf [i] = random.Next (texMin, texMax);
+				}
+			}
+
+			fixed (int *buf = obstacleID) {
+				for (int i = 0; i < corners; i++) {
+					buf [i] = random.Next (obMin, obMax);
+				}
+			}
+
+			fixed (int *buf = cornerOffsets) {
+				for (int i = 0; i < corners; i++) {
+			//		buf [i] = random.Next (texMax, texMax);
+				}
 			}
 		}
 
-		public unsafe int GetObstacleID (int layer)
+		public unsafe int GetTextureID (int corner)
 		{
-			fixed (int *buf = obstacleID) {
-				return buf [layer];
+			fixed (int *p = textureID) {
+				return p [corner];
+			}
+		}
+
+		public unsafe int GetObstacleID (int corner)
+		{
+			fixed (int *p = obstacleID) {
+				return p [corner];
+			}
+		}
+
+		public unsafe Vector3 GetCornerOffset (int corner)
+		{
+			fixed (float *p = cornerOffsets) {
+				var p1 = p + corner * 3;
+				return new Vector3 (*(p1), *(p1 + 1), *(p1 + 2));
 			}
 		}
 	}
