@@ -11,7 +11,7 @@ namespace WhatsInTheMountain
 
 		float speed = 1.2f; //units / s
 		float fov = 70; //degrees
-		float distanceAboveFloor = 0.2f;
+		float distanceAboveFloor = 0.20f;
 
 		BasicEffect basicEffect;
 		List<Texture2D> wallTextures = new List<Texture2D> ();
@@ -34,12 +34,12 @@ namespace WhatsInTheMountain
 		{
 			float aspectRatio = 4f / 3f;
 			cameraPosition = new Vector3 (0, -(1f - distanceAboveFloor), 0);
-			view = Matrix.CreateLookAt (cameraPosition, cameraPosition + 2 * Vector3.Forward, Vector3.Up);
+			view = Matrix.CreateLookAt (cameraPosition, cameraPosition + 0.001f * Vector3.Forward, Vector3.Up);
 			projection = Matrix.CreatePerspectiveFieldOfView (
 				MathHelper.ToRadians (fov),
 				aspectRatio,
-				1,
-				200);
+				0.001f,
+				tunnelDepth);
 
 			basicEffect = new BasicEffect (GraphicsDevice) {
 				World = Matrix.Identity,
@@ -51,7 +51,6 @@ namespace WhatsInTheMountain
 				FogEnd = layers.Length - 1,
 				FogEnabled = true,
 			};
-			//basicEffect.EnableDefaultLighting ();
 
 			GraphicsDevice.BlendState = BlendState.NonPremultiplied;
 
@@ -84,9 +83,9 @@ namespace WhatsInTheMountain
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
 				var layer = layers [i];
+				var d = i * depth + tunnelOffset;
 				for (int j = 0; j < 8; j++) {
 					basicEffect.Texture = wallTextures [layer.GetTextureID (j)];
-					var d = i * depth + tunnelOffset;
 					FillOctagonSectionVertices (quadVertices, d, d + depth, radius, j);
 					foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 						pass.Apply ();
@@ -101,7 +100,7 @@ namespace WhatsInTheMountain
 			int dogFrame = (int) (dogAnimationOffset * (float)dogFrameCount);
 
 			float dogDistance = -5;
-			RenderAnimatedFlatQuad (new Vector3 (0, -0.75f, dogDistance), dogTexture, 0.5f, 0.5f, dogFrameCount, dogFrame);
+			RenderAnimatedFlatQuad (new Vector3 (0, - (1f - distanceAboveFloor), dogDistance), dogTexture, 0.5f, 0.5f, dogFrameCount, dogFrame);
 
 			base.Draw (gameTime);
 		}
@@ -210,14 +209,14 @@ namespace WhatsInTheMountain
 
 			// Set the position and texture coordinate for each
 			// vertex
-			vertices[0].Position = innerStart;
-			vertices[0].TextureCoordinate = textureLowerLeft;
-			vertices[1].Position = outerStart;
-			vertices[1].TextureCoordinate = textureUpperLeft;
-			vertices[2].Position = innerEnd;
-			vertices[2].TextureCoordinate = textureLowerRight;
-			vertices[3].Position = outerEnd;
-			vertices[3].TextureCoordinate = textureUpperRight;
+			vertices [0].Position = innerStart;
+			vertices [0].TextureCoordinate = textureLowerLeft;
+			vertices [1].Position = outerStart;
+			vertices [1].TextureCoordinate = textureUpperLeft;
+			vertices [2].Position = innerEnd;
+			vertices [2].TextureCoordinate = textureLowerRight;
+			vertices [3].Position = outerEnd;
+			vertices [3].TextureCoordinate = textureUpperRight;
 		}
 
 		void PrintVertexCoords ()
