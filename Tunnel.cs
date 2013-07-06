@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -13,7 +12,10 @@ namespace WhatsInTheMountain
 		TunnelLayer [] layers = new TunnelLayer [32];
 		Matrix view, projection;
 		Vector3 cameraPosition;
-		short[] clockwiseQuadIndexes = { 0, 1, 2, 2, 1, 3 };
+		VertexPositionTexture[] quadVertices = new VertexPositionTexture[4];
+
+		Vector3[] unitOctagon = ComputeUnitOctagon ();
+		short[] clockwiseQuadIndices = { 0, 1, 2, 2, 1, 3 };
 
 		public Tunnel (Game game) : base (game)
 		{
@@ -21,11 +23,12 @@ namespace WhatsInTheMountain
 
 		public override void Initialize ()
 		{
+			float aspectRatio = 4f / 3f;
 			cameraPosition = new Vector3 (0, 0, 2);
 			view = Matrix.CreateLookAt (cameraPosition, Vector3.Zero, Vector3.Up);
 			projection = Matrix.CreatePerspectiveFieldOfView (
 				MathHelper.ToRadians (70),
-				GraphicsDevice.DisplayMode.AspectRatio,
+				aspectRatio,
 				1,
 				500);
 
@@ -33,9 +36,13 @@ namespace WhatsInTheMountain
 				World = Matrix.Identity,
 				View = view,
 				Projection = projection,
-				TextureEnabled = true
+				TextureEnabled = true,
+				FogColor = Color.Black.ToVector3 (),
+				FogStart = 10,
+				FogEnd = 100,
+				FogEnabled = true,
 			};
-			basicEffect.EnableDefaultLighting ();
+			//basicEffect.EnableDefaultLighting ();
 
 			base.Initialize ();
 		}
@@ -58,27 +65,43 @@ namespace WhatsInTheMountain
 		public override void Draw (GameTime gameTime)
 		{
 			GraphicsDevice.Clear (Color.CornflowerBlue);
-			var vertices = new VertexPositionNormalTexture[4];
 
-			foreach (var layer in layers) {
-				//foreach (var l in layer.
-				FillQuadVertices (vertices, Vector3.Zero, Vector3.Backward, Vector3.Up, 1, 1);
-				basicEffect.Texture = wallTextures [1];
+			const float depth = -1, radius = 1;
 
-				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
-					pass.Apply ();
-
-					GraphicsDevice.DrawUserIndexedPrimitives <VertexPositionNormalTexture> (
-						PrimitiveType.TriangleList,
-						vertices, 0, 4,
-						clockwiseQuadIndexes, 0, 2);
+			for (int i = layers.Length - 1; i >= 0; i--) {
+				var layer = layers [i];
+				for (int j = 0; j < 8; j++) {
+					basicEffect.Texture = wallTextures [layer.GetTextureID (j)];
+					var d = i * depth;
+					FillOctagonSectionVertices (quadVertices, d, d + depth, radius, j);
+					foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
+						pass.Apply ();
+						GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (PrimitiveType.TriangleList, quadVertices, 0, 4, clockwiseQuadIndices, 0, 2);
+					}
 				}
+				PrintVertexCoords ();
 			}
+
+			//DOG
+			//RenderFlatQuad (new Vector3 (0, 0, -10), dogTexture[0], 1, 1);
 
 			base.Draw (gameTime);
 		}
 
-		void FillQuadVertices (VertexPositionNormalTexture[] vertices, Vector3 origin, Vector3 normal, Vector3 up, float width, float height)
+		void RenderFlatQuad (Vector3 origin, Texture2D texture, int width, int height)
+		{
+			FillQuadVertices (quadVertices, origin, Vector3.Backward, Vector3.Up, width, height);
+			basicEffect.Texture = texture;
+			foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
+				pass.Apply ();
+				GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (
+					PrimitiveType.TriangleList,
+					quadVertices, 0, 4,
+					clockwiseQuadIndices, 0, 2);
+			}
+		}
+
+		void FillQuadVertices (VertexPositionTexture[] vertices, Vector3 origin, Vector3 normal, Vector3 up, float width, float height)
 		{
 			// Calculate the quad corners
 			var left = Vector3.Cross (normal, up);
@@ -90,15 +113,10 @@ namespace WhatsInTheMountain
 
 			// Fill in texture coordinates to display full texture
 			// on quad
-			Vector2 textureUpperLeft = new Vector2( 0.0f, 0.0f );
-			Vector2 textureUpperRight = new Vector2( 1.0f, 0.0f );
-			Vector2 textureLowerLeft = new Vector2( 0.0f, 1.0f );
-			Vector2 textureLowerRight = new Vector2( 1.0f, 1.0f );
-
-			// Provide a normal for each vertex
-			for (int i = 0; i < vertices.Length; i++) {
-				vertices[i].Normal = normal;
-			}
+			Vector2 textureUpperLeft = new Vector2 (0.0f, 0.0f);
+			Vector2 textureUpperRight = new Vector2 (1.0f, 0.0f);
+			Vector2 textureLowerLeft = new Vector2 (0.0f, 1.0f);
+			Vector2 textureLowerRight = new Vector2 (1.0f, 1.0f);
 
 			// Set the position and texture coordinate for each
 			// vertex
@@ -111,11 +129,91 @@ namespace WhatsInTheMountain
 			vertices[3].Position = upperRight;
 			vertices[3].TextureCoordinate = textureUpperRight;
 		}
+
+		static Vector3[] ComputeUnitOctagon ()
+		{
+			var coords = new Vector3[8];
+
+			float sinHalfAngle = (float) Math.Sin (Math.PI / 8);
+
+			coords[0] = new Vector3 ( sinHalfAngle,  1, 0);
+			coords[1] = new Vector3 ( 1,  sinHalfAngle, 0);
+			coords[2] = new Vector3 ( 1, -sinHalfAngle, 0);
+			coords[3] = new Vector3 ( sinHalfAngle, -1, 0);
+			coords[4] = new Vector3 (-sinHalfAngle, -1, 0);
+			coords[5] = new Vector3 (-1, -sinHalfAngle, 0);
+			coords[6] = new Vector3 (-1,  sinHalfAngle, 0);
+			coords[7] = new Vector3 (-sinHalfAngle,  1, 0);
+
+			return coords;
+		}
+
+		void FillOctagonSectionVertices (VertexPositionTexture[] vertices, float startDepth, float endDepth, float radius, int index)
+		{
+			int iNext = (index + 1 + 8) % 8;
+
+			Vector3 outerDepth = new Vector3 (0, 0, startDepth);
+			Vector3 innerDepth = new Vector3 (0, 0, endDepth);
+			Vector3 startXY = unitOctagon [index] * radius;
+			Vector3 endXY = unitOctagon [iNext] * radius;
+
+			Vector3 outerStart = startXY + outerDepth;
+			Vector3 outerEnd = endXY + outerDepth;
+			Vector3 innerStart = startXY + innerDepth;
+			Vector3 innerEnd   = endXY + innerDepth;
+
+			Vector3 normal = Vector3.Cross (outerEnd - outerStart, innerEnd - outerStart);
+			normal.Normalize ();
+
+			// Fill in texture coordinates to display full texture
+			// on quad
+			Vector2 textureUpperLeft = new Vector2 (0.0f, 0.0f);
+			Vector2 textureUpperRight = new Vector2 (1.0f, 0.0f);
+			Vector2 textureLowerLeft = new Vector2 (0.0f, 1.0f);
+			Vector2 textureLowerRight = new Vector2 (1.0f, 1.0f);
+			/*
+			for (int i = 0; i < vertices.Length; i++) {
+				vertices[i].Normal = normal;
+			}
+*/
+			// Set the position and texture coordinate for each
+			// vertex
+			vertices[0].Position = outerStart;
+			vertices[0].TextureCoordinate = textureLowerLeft;
+			vertices[1].Position = innerStart;
+			vertices[1].TextureCoordinate = textureUpperLeft;
+			vertices[2].Position = outerEnd;
+			vertices[2].TextureCoordinate = textureLowerRight;
+			vertices[3].Position = innerEnd;
+			vertices[3].TextureCoordinate = textureUpperRight;
+		}
+
+		void PrintVertexCoords ()
+		{
+			foreach (var coord in quadVertices) {
+				Console.Write ("{0}, ", coord.Position);
+			}
+			Console.WriteLine ();
+		}
 	}
 
 	public unsafe struct TunnelLayer
 	{
-		public fixed int TextureID [8];
-		public fixed int ObstacleID [8];
+		fixed int textureID [8];
+		fixed int obstacleID [8];
+
+		public unsafe int GetTextureID (int layer)
+		{
+			fixed (int *buf = textureID) {
+				return buf [layer];
+			}
+		}
+
+		public unsafe int GetObstacleID (int layer)
+		{
+			fixed (int *buf = obstacleID) {
+				return buf [layer];
+			}
+		}
 	}
 }
