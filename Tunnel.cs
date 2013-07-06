@@ -79,7 +79,7 @@ namespace WhatsInTheMountain
 
 		TunnelLayer GenerateLayer ()
 		{
-			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.0001f);
+			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.1f);
 		}
 
 		public override void Update (GameTime gameTime)
@@ -106,8 +106,10 @@ namespace WhatsInTheMountain
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
 				var offsetIndex = (layerOffset + i + layers.Length) % layers.Length;
+				var previousOffsetIndex = (layerOffset + i + 1 + layers.Length) % layers.Length;
 				var layer = layers [offsetIndex];
-				RenderLayer (i, layer);
+				var previousLayer = layers [previousOffsetIndex];
+				RenderLayer (i, layer, previousLayer);
 			}
 
 			int dogFrameCount = 10;
@@ -121,12 +123,12 @@ namespace WhatsInTheMountain
 			base.Draw (gameTime);
 		}
 
-		void RenderLayer (int depthIndex, TunnelLayer layer)
+		void RenderLayer (int depthIndex, TunnelLayer layer, TunnelLayer previousLayer)
 		{
 			var d = depthIndex * layerDepth + tunnelOffset;
 			for (int j = 0; j < 8; j++) {
 				basicEffect.Texture = wallTextures [layer.GetTextureID (j)];
-				FillOctagonSectionVertices (quadVertices, d, d + layerDepth, layerRadius, j);
+				FillOctagonSectionVertices (quadVertices, d, d + layerDepth, layerRadius, j, layer, previousLayer);
 				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 					pass.Apply ();
 					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (
@@ -215,7 +217,10 @@ namespace WhatsInTheMountain
 			return coords;
 		}
 
-		void FillOctagonSectionVertices (VertexPositionTexture[] vertices, float startDepth, float endDepth, float radius, int index)
+		void FillOctagonSectionVertices (
+			VertexPositionTexture[] vertices,
+			float startDepth, float endDepth, float radius, int index,
+			TunnelLayer layer, TunnelLayer previousLayer)
 		{
 			int iNext = (index + 1 + 8) % 8;
 
@@ -224,10 +229,10 @@ namespace WhatsInTheMountain
 			Vector3 startXY = unitOctagon [index] * radius;
 			Vector3 endXY = unitOctagon [iNext] * radius;
 
-			Vector3 outerStart = startXY + outerDepth;
-			Vector3 outerEnd = endXY + outerDepth;
-			Vector3 innerStart = startXY + innerDepth;
-			Vector3 innerEnd   = endXY + innerDepth;
+			Vector3 outerStart = startXY + outerDepth + layer.GetCornerOffset (index);
+			Vector3 outerEnd = endXY + outerDepth + layer.GetCornerOffset (iNext);
+			Vector3 innerStart = startXY + innerDepth + previousLayer.GetCornerOffset (index);
+			Vector3 innerEnd   = endXY + innerDepth + previousLayer.GetCornerOffset (iNext);
 
 			Vector3 normal = Vector3.Cross (outerEnd - outerStart, innerEnd - outerStart);
 			normal.Normalize ();

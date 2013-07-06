@@ -1,7 +1,5 @@
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace WhatsInTheMountain
 {
@@ -27,10 +25,11 @@ namespace WhatsInTheMountain
 				}
 			}
 
-			fixed (int *buf = cornerOffsets) {
-				for (int i = 0; i < corners; i++) {
-			//		buf [i] = random.Next (texMax, texMax);
-				}
+			fixed (float *p = cornerOffsets) {
+				var p1 = p + corners * 3 - 1;
+				do {
+					*p1 = (float)(random.NextDouble () - 0.5) * offsetScale;
+				} while (--p1 >= p);
 			}
 		}
 
