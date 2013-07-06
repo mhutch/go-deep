@@ -96,6 +96,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="DogGame.cs" />
     <Compile Include="Tunnel.cs" />
+    <Compile Include="TunnelLayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
