@@ -7,9 +7,11 @@ namespace WhatsInTheMountain
 {
 	public class Tunnel : DrawableGameComponent
 	{
+		const int tunnelDepth = 10;
+
 		BasicEffect basicEffect;
 		List<Texture2D> wallTextures = new List<Texture2D> ();
-		TunnelLayer [] layers = new TunnelLayer [32];
+		TunnelLayer [] layers = new TunnelLayer [tunnelDepth];
 		Matrix view, projection;
 		Vector3 cameraPosition;
 		VertexPositionTexture[] quadVertices = new VertexPositionTexture[4];
@@ -24,10 +26,10 @@ namespace WhatsInTheMountain
 		public override void Initialize ()
 		{
 			float aspectRatio = 4f / 3f;
-			cameraPosition = new Vector3 (0, 0, 2);
-			view = Matrix.CreateLookAt (cameraPosition, Vector3.Zero, Vector3.Up);
+			cameraPosition = new Vector3 (0, -0.5f, 0);
+			view = Matrix.CreateLookAt (cameraPosition, new Vector3 (0, -0.5f, -2), Vector3.Up);
 			projection = Matrix.CreatePerspectiveFieldOfView (
-				MathHelper.ToRadians (70),
+				MathHelper.ToRadians (90),
 				aspectRatio,
 				1,
 				500);
@@ -38,8 +40,8 @@ namespace WhatsInTheMountain
 				Projection = projection,
 				TextureEnabled = true,
 				FogColor = Color.Black.ToVector3 (),
-				FogStart = 10,
-				FogEnd = 100,
+				FogStart = 0,
+				FogEnd = layers.Length - 1,
 				FogEnabled = true,
 			};
 			//basicEffect.EnableDefaultLighting ();
@@ -64,9 +66,11 @@ namespace WhatsInTheMountain
 
 		public override void Draw (GameTime gameTime)
 		{
-			GraphicsDevice.Clear (Color.CornflowerBlue);
+			GraphicsDevice.Clear (Color.Black);
 
 			const float depth = -1, radius = 1;
+
+			//const float depthOffset
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
 				var layer = layers [i];
@@ -178,13 +182,13 @@ namespace WhatsInTheMountain
 */
 			// Set the position and texture coordinate for each
 			// vertex
-			vertices[0].Position = outerStart;
+			vertices[0].Position = innerStart;
 			vertices[0].TextureCoordinate = textureLowerLeft;
-			vertices[1].Position = innerStart;
+			vertices[1].Position = outerStart;
 			vertices[1].TextureCoordinate = textureUpperLeft;
-			vertices[2].Position = outerEnd;
+			vertices[2].Position = innerEnd;
 			vertices[2].TextureCoordinate = textureLowerRight;
-			vertices[3].Position = innerEnd;
+			vertices[3].Position = outerEnd;
 			vertices[3].TextureCoordinate = textureUpperRight;
 		}
 
