@@ -104,5 +104,6 @@
   <ItemGroup>
     <BundleResource Include="Resources\Content\earth0.png" />
     <BundleResource Include="Resources\Content\earth1.png" />
+    <BundleResource Include="Resources\Content\dog_run.png" />
   </ItemGroup>
 </Project>

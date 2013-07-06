@@ -9,8 +9,13 @@ namespace WhatsInTheMountain
 	{
 		const int tunnelDepth = 10;
 
+		float speed = 1.2f; //units / s
+		float fov = 70; //degrees
+		float distanceAboveFloor = 0.2f;
+
 		BasicEffect basicEffect;
 		List<Texture2D> wallTextures = new List<Texture2D> ();
+		Texture2D dogTexture;
 		TunnelLayer [] layers = new TunnelLayer [tunnelDepth];
 		Matrix view, projection;
 		Vector3 cameraPosition;
@@ -19,7 +24,7 @@ namespace WhatsInTheMountain
 		Vector3[] unitOctagon = ComputeUnitOctagon ();
 		short[] clockwiseQuadIndices = { 0, 1, 2, 2, 1, 3 };
 
-		float tunnelOffset;
+		float tunnelOffset, dogAnimationOffset;
 
 		public Tunnel (Game game) : base (game)
 		{
@@ -28,13 +33,13 @@ namespace WhatsInTheMountain
 		public override void Initialize ()
 		{
 			float aspectRatio = 4f / 3f;
-			cameraPosition = new Vector3 (0, -0.5f, 0);
-			view = Matrix.CreateLookAt (cameraPosition, new Vector3 (0, -0.5f, -2), Vector3.Up);
+			cameraPosition = new Vector3 (0, -(1f - distanceAboveFloor), 0);
+			view = Matrix.CreateLookAt (cameraPosition, cameraPosition + 2 * Vector3.Forward, Vector3.Up);
 			projection = Matrix.CreatePerspectiveFieldOfView (
-				MathHelper.ToRadians (90),
+				MathHelper.ToRadians (fov),
 				aspectRatio,
 				1,
-				500);
+				200);
 
 			basicEffect = new BasicEffect (GraphicsDevice) {
 				World = Matrix.Identity,
@@ -48,6 +53,8 @@ namespace WhatsInTheMountain
 			};
 			//basicEffect.EnableDefaultLighting ();
 
+			GraphicsDevice.BlendState = BlendState.NonPremultiplied;
+
 			base.Initialize ();
 		}
 
@@ -55,8 +62,9 @@ namespace WhatsInTheMountain
 		{
 			const int earthTextures = 2;
 			for (int i = 0; i < 2; i++) {
-				wallTextures.Add (Game.Content.Load<Texture2D> ("earth" + i.ToString ()));
+				wallTextures.Add (Game.Content.Load<Texture2D> ("earth" + i));
 			}
+			dogTexture = Game.Content.Load<Texture2D> ("dog_run");
 
 			base.LoadContent ();
 		}
@@ -72,7 +80,6 @@ namespace WhatsInTheMountain
 
 			const float depth = -1, radius = 1;
 
-			float speed = 1.2f; //units / s
 			tunnelOffset = (tunnelOffset + speed * (float)gameTime.ElapsedGameTime.TotalSeconds) %1f;
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
@@ -88,9 +95,13 @@ namespace WhatsInTheMountain
 				}
 			}
 
-			//DOG
+			int dogFrameCount = 10;
+			float dogAnimationLength = 0.5f; //seconds
+			dogAnimationOffset = (dogAnimationOffset + (float)gameTime.ElapsedGameTime.TotalSeconds / dogAnimationLength * speed) %1f;
+			int dogFrame = (int) (dogAnimationOffset * (float)dogFrameCount);
+
 			float dogDistance = -5;
-			RenderFlatQuad (new Vector3 (0, -0.75f, dogDistance), wallTextures[0], 0.5f, 0.5f);
+			RenderAnimatedFlatQuad (new Vector3 (0, -0.75f, dogDistance), dogTexture, 0.5f, 0.5f, dogFrameCount, dogFrame);
 
 			base.Draw (gameTime);
 		}
@@ -108,7 +119,27 @@ namespace WhatsInTheMountain
 			}
 		}
 
-		void FillQuadVertices (VertexPositionTexture[] vertices, Vector3 origin, Vector3 normal, Vector3 up, float width, float height)
+		void RenderAnimatedFlatQuad (Vector3 origin, Texture2D texture, float width, float height, int frameCount, int frame)
+		{
+			float frameWidth = 1f / frameCount;
+			float xTextureStart = frameWidth * frame;
+			float xTextureEnd = xTextureStart + frameWidth;
+
+			basicEffect.Texture = texture;
+			FillQuadVertices (quadVertices, origin, Vector3.Backward, Vector3.Up, width, height, xTextureStart, xTextureEnd);
+			foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
+				pass.Apply ();
+				GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (
+					PrimitiveType.TriangleList,
+					quadVertices, 0, 4,
+					clockwiseQuadIndices, 0, 2);
+			}
+		}
+
+		void FillQuadVertices (
+			VertexPositionTexture[] vertices, Vector3 origin, Vector3 normal, Vector3 up,
+			float width, float height,
+			float xTextureStart = 0f, float xTextureEnd = 1f)
 		{
 			// Calculate the quad corners
 			var left = Vector3.Cross (normal, up);
@@ -118,12 +149,10 @@ namespace WhatsInTheMountain
 			var lowerLeft = upperLeft - (up * height);
 			var lowerRight = upperRight - (up * height);
 
-			// Fill in texture coordinates to display full texture
-			// on quad
-			Vector2 textureUpperLeft = new Vector2 (0.0f, 0.0f);
-			Vector2 textureUpperRight = new Vector2 (1.0f, 0.0f);
-			Vector2 textureLowerLeft = new Vector2 (0.0f, 1.0f);
-			Vector2 textureLowerRight = new Vector2 (1.0f, 1.0f);
+			Vector2 textureUpperLeft = new Vector2 (xTextureStart, 0.0f);
+			Vector2 textureUpperRight = new Vector2 (xTextureEnd, 0.0f);
+			Vector2 textureLowerLeft = new Vector2 (xTextureStart, 1.0f);
+			Vector2 textureLowerRight = new Vector2 (xTextureEnd, 1.0f);
 
 			// Set the position and texture coordinate for each
 			// vertex
