@@ -7,7 +7,7 @@ namespace WhatsInTheMountain
 {
 	public class Tunnel : DrawableGameComponent
 	{
-		const int tunnelDepth = 10;
+		const int tunnelDepth = 20;
 		const float layerDepth = -1, layerRadius = 1;
 
 		float speed = 1.2f; //units / s
@@ -17,10 +17,11 @@ namespace WhatsInTheMountain
 		BasicEffect basicEffect;
 		List<Texture2D> wallTextures = new List<Texture2D> ();
 		Texture2D dogTexture;
+		Vector3 lightColor = new Vector3 (1.0f, 1.0f, 1.0f);
 
 		Matrix view, projection;
 		Vector3 cameraPosition;
-		VertexPositionTexture[] quadVertices = new VertexPositionTexture[4];
+		VertexPositionNormalTexture[] quadVertices = new VertexPositionNormalTexture[4];
 
 		Vector3[] unitOctagon = ComputeUnitOctagon ();
 		short[] clockwiseQuadIndices = { 0, 1, 2, 2, 1, 3 };
@@ -52,10 +53,16 @@ namespace WhatsInTheMountain
 				Projection = projection,
 				TextureEnabled = true,
 				FogColor = Color.Black.ToVector3 (),
-				FogStart = 0,
+				FogStart = layers.Length / 2,
 				FogEnd = layers.Length - 1,
 				FogEnabled = true,
 			};
+
+			// turn on the lighting subsystem.
+			basicEffect.LightingEnabled = true;
+			//basicEffect.AmbientLightColor = lightColor * 0.2f;
+			basicEffect.DirectionalLight0.DiffuseColor = lightColor;
+			basicEffect.DirectionalLight0.Enabled = true;
 
 			GraphicsDevice.BlendState = BlendState.NonPremultiplied;
 
@@ -111,6 +118,7 @@ namespace WhatsInTheMountain
 				var previousLayer = layers [previousOffsetIndex];
 				RenderLayer (i, layer, previousLayer);
 			}
+			basicEffect.DirectionalLight0.DiffuseColor = lightColor;
 
 			int dogFrameCount = 10;
 			float dogAnimationLength = 0.5f; //seconds
@@ -126,12 +134,18 @@ namespace WhatsInTheMountain
 		void RenderLayer (int depthIndex, TunnelLayer layer, TunnelLayer previousLayer)
 		{
 			var d = depthIndex * layerDepth + tunnelOffset;
+			//user a softer fall-off than 1/r^2
+			basicEffect.DirectionalLight0.DiffuseColor = lightColor / Math.Max (1, 0.15f * Math.Abs (d));
 			for (int j = 0; j < 8; j++) {
 				basicEffect.Texture = wallTextures [layer.GetTextureID (j)];
 				FillOctagonSectionVertices (quadVertices, d, d + layerDepth, layerRadius, j, layer, previousLayer);
+				var lightDirection = quadVertices [0].Position;
+				lightDirection.Normalize ();
+				//ensure light is pointing here from origin
+				basicEffect.DirectionalLight0.Direction = lightDirection;
 				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 					pass.Apply ();
-					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (
+					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (
 						PrimitiveType.TriangleList,
 						quadVertices, 0, 4,
 						clockwiseQuadIndices, 0, 2);
@@ -145,7 +159,7 @@ namespace WhatsInTheMountain
 			basicEffect.Texture = texture;
 			foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 				pass.Apply ();
-				GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (
+				GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (
 					PrimitiveType.TriangleList,
 					quadVertices, 0, 4,
 					clockwiseQuadIndices, 0, 2);
@@ -162,7 +176,7 @@ namespace WhatsInTheMountain
 			FillQuadVertices (quadVertices, origin, Vector3.Backward, Vector3.Up, width, height, xTextureStart, xTextureEnd);
 			foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 				pass.Apply ();
-				GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (
+				GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (
 					PrimitiveType.TriangleList,
 					quadVertices, 0, 4,
 					clockwiseQuadIndices, 0, 2);
@@ -170,7 +184,7 @@ namespace WhatsInTheMountain
 		}
 
 		void FillQuadVertices (
-			VertexPositionTexture[] vertices, Vector3 origin, Vector3 normal, Vector3 up,
+			VertexPositionNormalTexture[] vertices, Vector3 origin, Vector3 normal, Vector3 up,
 			float width, float height,
 			float xTextureStart = 0f, float xTextureEnd = 1f)
 		{
@@ -218,7 +232,7 @@ namespace WhatsInTheMountain
 		}
 
 		void FillOctagonSectionVertices (
-			VertexPositionTexture[] vertices,
+			VertexPositionNormalTexture[] vertices,
 			float startDepth, float endDepth, float radius, int index,
 			TunnelLayer layer, TunnelLayer previousLayer)
 		{
@@ -234,7 +248,7 @@ namespace WhatsInTheMountain
 			Vector3 innerStart = startXY + innerDepth + previousLayer.GetCornerOffset (index);
 			Vector3 innerEnd   = endXY + innerDepth + previousLayer.GetCornerOffset (iNext);
 
-			Vector3 normal = Vector3.Cross (outerEnd - outerStart, innerEnd - outerStart);
+			Vector3 normal = Vector3.Cross (startXY - endXY, -Vector3.UnitZ);
 			normal.Normalize ();
 
 			// Fill in texture coordinates to display full texture
@@ -254,6 +268,10 @@ namespace WhatsInTheMountain
 			vertices [2].TextureCoordinate = textureLowerRight;
 			vertices [3].Position = outerEnd;
 			vertices [3].TextureCoordinate = textureUpperRight;
+
+			for (int i = 0; i < vertices.Length; i++) {
+				vertices [i].Normal = normal;
+			}
 		}
 
 		void PrintVertexCoords ()
