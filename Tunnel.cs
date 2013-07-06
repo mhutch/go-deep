@@ -19,6 +19,8 @@ namespace WhatsInTheMountain
 		Vector3[] unitOctagon = ComputeUnitOctagon ();
 		short[] clockwiseQuadIndices = { 0, 1, 2, 2, 1, 3 };
 
+		float tunnelOffset;
+
 		public Tunnel (Game game) : base (game)
 		{
 		}
@@ -70,29 +72,30 @@ namespace WhatsInTheMountain
 
 			const float depth = -1, radius = 1;
 
-			//const float depthOffset
+			float speed = 1.2f; //units / s
+			tunnelOffset = (tunnelOffset + speed * (float)gameTime.ElapsedGameTime.TotalSeconds) %1f;
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
 				var layer = layers [i];
 				for (int j = 0; j < 8; j++) {
 					basicEffect.Texture = wallTextures [layer.GetTextureID (j)];
-					var d = i * depth;
+					var d = i * depth + tunnelOffset;
 					FillOctagonSectionVertices (quadVertices, d, d + depth, radius, j);
 					foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 						pass.Apply ();
 						GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture> (PrimitiveType.TriangleList, quadVertices, 0, 4, clockwiseQuadIndices, 0, 2);
 					}
 				}
-				PrintVertexCoords ();
 			}
 
 			//DOG
-			//RenderFlatQuad (new Vector3 (0, 0, -10), dogTexture[0], 1, 1);
+			float dogDistance = -5;
+			RenderFlatQuad (new Vector3 (0, -0.75f, dogDistance), wallTextures[0], 0.5f, 0.5f);
 
 			base.Draw (gameTime);
 		}
 
-		void RenderFlatQuad (Vector3 origin, Texture2D texture, int width, int height)
+		void RenderFlatQuad (Vector3 origin, Texture2D texture, float width, float height)
 		{
 			FillQuadVertices (quadVertices, origin, Vector3.Backward, Vector3.Up, width, height);
 			basicEffect.Texture = texture;
@@ -175,11 +178,7 @@ namespace WhatsInTheMountain
 			Vector2 textureUpperRight = new Vector2 (1.0f, 0.0f);
 			Vector2 textureLowerLeft = new Vector2 (0.0f, 1.0f);
 			Vector2 textureLowerRight = new Vector2 (1.0f, 1.0f);
-			/*
-			for (int i = 0; i < vertices.Length; i++) {
-				vertices[i].Normal = normal;
-			}
-*/
+
 			// Set the position and texture coordinate for each
 			// vertex
 			vertices[0].Position = innerStart;
