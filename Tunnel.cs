@@ -82,27 +82,25 @@ namespace WhatsInTheMountain
 			basicEffect.DirectionalLight0.DiffuseColor = lightColor;
 			basicEffect.DirectionalLight0.Enabled = true;
 
-			GraphicsDevice.BlendState = BlendState.AlphaBlend;
+			GraphicsDevice.BlendState = BlendState.NonPremultiplied;
 
 			base.Initialize ();
 		}
 
 		protected override void LoadContent ()
 		{
-			const int earthTextures = 2;
-			for (int i = 0; i < 2; i++) {
-				wallTextures.Add (Game.Content.Load<Texture2D> ("earth" + i));
-			}
-			dogTexture = Game.Content.Load<Texture2D> ("dog_run");
-			obstacleTextures.Add (Game.Content.Load<Texture2D> ("rocks"));
+			wallTextures.Add (Game.Content.Load<Texture2D> ("walls\\dirt2"));
 
-			sfxHitBoulder = Game.Content.Load<SoundEffect> ("What'sInHitBoulderSFX");
-			sfxLose = Game.Content.Load<SoundEffect> ("What'sInLoseSFX");
-			sfxPsychedelic = Game.Content.Load<SoundEffect> ("What'sInPsychedelicSFX");
-			sfxWin = Game.Content.Load<SoundEffect> ("What'sInWinSFX");
-			sfxRotate = Game.Content.Load<SoundEffect> ("What'sInRotateSFX");
-			sfxSpeedUp = Game.Content.Load<SoundEffect> ("What'sInSpeedUpSFX");
-			sfxSlowDown = Game.Content.Load<SoundEffect> ("What'sInSlowDownSFX");
+			dogTexture = Game.Content.Load<Texture2D> ("sprites\\dog_run");
+			obstacleTextures.Add (Game.Content.Load<Texture2D> ("obst\\rocks"));
+
+			sfxHitBoulder = Game.Content.Load<SoundEffect> ("sfx\\hit-boulder.m4a");
+			sfxLose = Game.Content.Load<SoundEffect> ("sfx\\lose.m4a");
+			sfxPsychedelic = Game.Content.Load<SoundEffect> ("sfx\\psychedelic.m4a");
+			sfxWin = Game.Content.Load<SoundEffect> ("sfx\\win.m4a");
+			sfxRotate = Game.Content.Load<SoundEffect> ("sfx\\rotate.m4a");
+			sfxSpeedUp = Game.Content.Load<SoundEffect> ("sfx\\speed-up.m4a");
+			sfxSlowDown = Game.Content.Load<SoundEffect> ("sfx\\slow-down.m4a");
 
 			for (int i = 0; i < layers.Length; i++) {
 				layers [i] = GenerateLayer ();

@@ -26,11 +26,11 @@ namespace WhatsInTheMountain
 			};
 			graphics.IsFullScreen = false;
 
-			intro = new Cinematic (this, null, Color.Black) {
-				{ "intro1", 1f },
-				{ "intro2", 1f },
-				{ "intro3", 1f },
-				{ "intro4", 1f },
+			intro = new Cinematic (this, "music\\cinematic.m4a", Color.Black) {
+				{ "cine\\intro1", 3.5f },
+				{ "cine\\intro2", 4.5f },
+				{ "cine\\intro3", 3.5f },
+				{ "cine\\intro4", 6f },
 				{ 1f },
 			};
 
