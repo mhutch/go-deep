@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using MonoMac.AudioToolbox;
+using Microsoft.Xna.Framework.Input;
 
 
 namespace WhatsInTheMountain
@@ -91,6 +92,13 @@ namespace WhatsInTheMountain
 			if (!Enabled)
 				return;
 
+			//check for rotation commands
+			KeyboardState ks = Keyboard.GetState ();
+			if (ks.IsKeyDown (Keys.Space)) {
+				Ended = true;
+				musicInstance.Stop ();
+			}
+
 			if (!startedPlaying) {
 				startedPlaying = true;
 				startTime = gameTime.TotalGameTime;
@@ -126,12 +134,11 @@ namespace WhatsInTheMountain
 				return;
 
 			GraphicsDevice.Clear (backgroundColor);
-			if (frameIndex < 0)
-				return;
-
-			var image = frames [frameIndex].Image;
-			if (image != null) {
-				RenderFlatQuad (Vector3.Forward, image, 2f, 2f);
+			if (!Ended && frameIndex >= 0) {
+				var image = frames [frameIndex].Image;
+				if (image != null) {
+					RenderFlatQuad (Vector3.Forward, image, 2f, 2f);
+				}
 			}
 
 			base.Draw (gameTime);
