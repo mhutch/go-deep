@@ -9,6 +9,9 @@ namespace WhatsInTheMountain
 {
 	public class Tunnel : DrawableGameComponent
 	{
+		const float musicVolume = 0.4f;
+		const float sfxVolume = 1.0f;
+
 		const int tunnelDepth = 20;
 		const float layerDepth = -1f, layerRadius = 1;
 		const float distanceAboveFloor = 0.20f;
@@ -139,6 +142,7 @@ namespace WhatsInTheMountain
 			if (playingMusic == null || playingMusic.State == SoundState.Stopped) {
 				var m = music [random.Next (0, music.Count)];
 				playingMusic = m.CreateInstance ();
+				playingMusic.Volume = musicVolume;
 				playingMusic.Play ();
 			}
 
@@ -158,7 +162,9 @@ namespace WhatsInTheMountain
 						playerRotationRemaining = 1f;
 					}
 					bouncing = true;
-					ReplaceSoundInstance (sfxHitBoulder, ref sfxInstanceHitBoulder).Play ();
+					ReplaceSoundInstance (sfxHitBoulder, ref sfxInstanceHitBoulder);
+					sfxInstanceHitBoulder.Volume = sfxVolume * 2f;
+					sfxInstanceHitBoulder.Play ();
 				}
 			}
 
@@ -224,7 +230,7 @@ namespace WhatsInTheMountain
 			playerRotationRemaining = s;
 
 			ReplaceSoundInstance (sfxRotate, ref sfxInstanceRotate);
-			sfxInstanceRotate.Volume = 0.5f;
+			sfxInstanceRotate.Volume = sfxVolume * 0.6f;
 			sfxInstanceRotate.Pan = -s;
 			sfxInstanceRotate.Play ();
 		}

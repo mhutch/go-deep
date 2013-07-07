@@ -104,6 +104,7 @@ namespace WhatsInTheMountain
 				startTime = gameTime.TotalGameTime;
 				if (music != null) {
 					musicInstance = music.CreateInstance ();
+					musicInstance.Volume = 0.7f;
 					musicInstance.Play ();
 				}
 			}
