@@ -103,18 +103,18 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <BundleResource Include="Resources\Content\earth0.png" />
-    <BundleResource Include="Resources\Content\earth1.png" />
-    <BundleResource Include="Resources\Content\dog_run.png" />
-    <BundleResource Include="Resources\Content\icepillar.png" />
-    <BundleResource Include="Resources\Content\intro1.png" />
-    <BundleResource Include="Resources\Content\intro2.png" />
-    <BundleResource Include="Resources\Content\intro3.png" />
-    <BundleResource Include="Resources\Content\intro4.png" />
-    <BundleResource Include="Resources\Content\powerup_slow.png" />
-    <BundleResource Include="Resources\Content\powerup_speed.png" />
-    <BundleResource Include="Resources\Content\rainbow.png" />
-    <BundleResource Include="Resources\Content\rockface.png" />
-    <BundleResource Include="Resources\Content\rocks.png" />
+    <BundleResource Include="Resources\Content\dog_run.xnb" />
+    <BundleResource Include="Resources\Content\earth0.xnb" />
+    <BundleResource Include="Resources\Content\earth1.xnb" />
+    <BundleResource Include="Resources\Content\icepillar.xnb" />
+    <BundleResource Include="Resources\Content\intro1.xnb" />
+    <BundleResource Include="Resources\Content\intro2.xnb" />
+    <BundleResource Include="Resources\Content\intro3.xnb" />
+    <BundleResource Include="Resources\Content\intro4.xnb" />
+    <BundleResource Include="Resources\Content\powerup_slow.xnb" />
+    <BundleResource Include="Resources\Content\powerup_speed.xnb" />
+    <BundleResource Include="Resources\Content\rainbow.xnb" />
+    <BundleResource Include="Resources\Content\rockface.xnb" />
+    <BundleResource Include="Resources\Content\rocks.xnb" />
   </ItemGroup>
 </Project>

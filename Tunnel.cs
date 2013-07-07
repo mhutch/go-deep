@@ -78,7 +78,7 @@ namespace WhatsInTheMountain
 			basicEffect.DirectionalLight0.DiffuseColor = lightColor;
 			basicEffect.DirectionalLight0.Enabled = true;
 
-			GraphicsDevice.BlendState = BlendState.NonPremultiplied;
+			GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
 			base.Initialize ();
 		}
