@@ -56,9 +56,6 @@ namespace GoDeep
 		int playerRotation;
 		float playerRotationRemaining;
 		bool bouncing;
-		bool startedPlaying;
-
-		TimeSpan startTime;
 
 		public void Reset ()
 		{
@@ -77,7 +74,6 @@ namespace GoDeep
 			tunnelOffset = 0;
 			dogAnimationOffset = 0;
 			basicEffect.World = Matrix.Identity;
-			startedPlaying = false;
 		}
 
 		public Tunnel (Game game) : base (game)
@@ -172,13 +168,6 @@ namespace GoDeep
 			if (!Enabled || Ended)
 				return;
 
-			if (!startedPlaying) {
-				startedPlaying = true;
-				startTime = gameTime.TotalGameTime;
-			}
-
-			var totalPlayedSeconds = (gameTime.TotalGameTime - startTime).TotalSeconds;
-
 			//check for rotation commands
 			KeyboardState ks = Keyboard.GetState ();
 			if (playerRotationRemaining == 0f) {
@@ -189,8 +178,6 @@ namespace GoDeep
 				} else if (ks.IsKeyDown (Keys.W)) {
 					End (true);
 				} else if (ks.IsKeyDown (Keys.L)) {
-					End (false);
-				} else if (ks.IsKeyDown (Keys.Escape) && totalPlayedSeconds > 1f) {
 					End (false);
 				}
 			}

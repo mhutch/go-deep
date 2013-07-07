@@ -145,7 +145,15 @@ namespace GoDeep
 			if (!Ended && frameIndex >= 0) {
 				var image = frames [frameIndex].Image;
 				if (image != null) {
-					RenderFlatQuad (Vector3.Forward, image, 2f, 2f);
+					float maxH = 2f;
+					float maxW = maxH * 4 / 3;
+					float h = maxH;
+					var w = maxH * ((float) image.Width / (float) image.Height);
+					if (w > maxW) {
+						w = maxW;
+						h = maxW * ((float) image.Height / (float) image.Width);
+					}
+					RenderFlatQuad (Vector3.Forward, image, w, h);
 				}
 			}
 
