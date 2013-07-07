@@ -116,6 +116,9 @@ namespace GoDeep
 		protected override void LoadContent ()
 		{
 			wallTextures.Add (Game.Content.Load<Texture2D> ("walls\\dirt2"));
+			wallTextures.Add (Game.Content.Load<Texture2D> ("walls\\dirt4"));
+			wallTextures.Add (Game.Content.Load<Texture2D> ("walls\\dirt5"));
+			wallTextures.Add (Game.Content.Load<Texture2D> ("walls\\dirt6"));
 
 			dogTexture = Game.Content.Load<Texture2D> ("sprites\\dog_run");
 			obstacleTextures.Add (Game.Content.Load<Texture2D> ("obst\\rocks"));
