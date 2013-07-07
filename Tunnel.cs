@@ -153,7 +153,9 @@ namespace GoDeep
 
 		TunnelLayer GenerateLayer ()
 		{
-			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.30f, 0.1f);
+			var tl = new TunnelLayer ();
+			tl.Randomize (random, 0, wallTextures.Count, 0, 1, 0.30f, 0.1f);
+			return tl;
 		}
 
 		public bool Ended { get; private set; }

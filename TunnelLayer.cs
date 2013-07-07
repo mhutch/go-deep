@@ -11,7 +11,7 @@ namespace GoDeep
 		fixed int obstacleID [corners];
 		fixed float cornerOffsets [corners * 3];
 
-		public TunnelLayer (Random random, int texMin, int texMax, int obMin, int obMax, float obChance, float offsetScale)
+		public void Randomize (Random random, int texMin, int texMax, int obMin, int obMax, float obChance, float offsetScale)
 		{
 			fixed (int *buf = textureID) {
 				for (int i = 0; i < corners; i++) {
