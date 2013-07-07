@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace WhatsInTheMountain
 {
@@ -30,6 +31,8 @@ namespace WhatsInTheMountain
 		Vector3 lightColor = new Vector3 (1.0f, 1.0f, 1.0f);
 
 		SoundEffect sfxHitBoulder, sfxLose, sfxPsychedelic, sfxWin, sfxRotate, sfxSpeedUp, sfxSlowDown;
+		SoundEffectInstance sfxInstanceRotate, sfxInstanceHitBoulder;
+
 		Matrix view, projection;
 		Vector3 cameraPosition;
 		VertexPositionNormalTexture[] quadVertices = new VertexPositionNormalTexture[4];
@@ -119,9 +122,9 @@ namespace WhatsInTheMountain
 			KeyboardState ks = Keyboard.GetState ();
 			if (playerRotationRemaining == 0f) {
 				if (ks.IsKeyDown (Keys.Right)) {
-					playerRotationRemaining = -1f;
+					Rotate (-1f);
 				} else if (ks.IsKeyDown (Keys.Left)) {
-					playerRotationRemaining = 1f;
+					Rotate (1f);
 				}
 			}
 
@@ -141,6 +144,7 @@ namespace WhatsInTheMountain
 						playerRotationRemaining = 1f;
 					}
 					bouncing = true;
+					ReplaceSoundInstance (sfxHitBoulder, ref sfxInstanceHitBoulder).Play ();
 				}
 			}
 
@@ -195,6 +199,16 @@ namespace WhatsInTheMountain
 			}
 
 			base.Update (gameTime);
+		}
+
+		void Rotate (float s)
+		{
+			playerRotationRemaining = s;
+
+			ReplaceSoundInstance (sfxRotate, ref sfxInstanceRotate);
+			sfxInstanceRotate.Volume = 0.5f;
+			sfxInstanceRotate.Pan = -s;
+			sfxInstanceRotate.Play ();
 		}
 
 		public override void Draw (GameTime gameTime)
@@ -414,6 +428,16 @@ namespace WhatsInTheMountain
 				Console.Write ("{0}, ", coord.Position);
 			}
 			Console.WriteLine ();
+		}
+
+		SoundEffectInstance ReplaceSoundInstance (SoundEffect effect, ref SoundEffectInstance instance)
+		{
+			if (instance != null && instance.State == SoundState.Playing) {
+				instance.Stop ();
+				instance.Dispose ();
+			}
+			instance = effect.CreateInstance ();
+			return instance;
 		}
 	}
 }
