@@ -111,7 +111,7 @@ namespace GoDeep
 			frameIndex = -1;
 
 			KeyboardState ks = Keyboard.GetState ();
-			if (ks.IsKeyDown (Keys.Space) && elapsedSeconds > 1f) {
+			if ((ks.IsKeyDown (Keys.Space) || ks.IsKeyDown (Keys.Escape)) && elapsedSeconds > 0.5f) {
 				Ended = true;
 				musicInstance.Stop ();
 			}
