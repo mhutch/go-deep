@@ -33,6 +33,9 @@ namespace WhatsInTheMountain
 		SoundEffect sfxHitBoulder, sfxLose, sfxPsychedelic, sfxWin, sfxRotate, sfxSpeedUp, sfxSlowDown;
 		SoundEffectInstance sfxInstanceRotate, sfxInstanceHitBoulder;
 
+		List<SoundEffect> music = new List<SoundEffect> ();
+		SoundEffectInstance playingMusic;
+
 		Matrix view, projection;
 		Vector3 cameraPosition;
 		VertexPositionNormalTexture[] quadVertices = new VertexPositionNormalTexture[4];
@@ -102,6 +105,10 @@ namespace WhatsInTheMountain
 			sfxSpeedUp = Game.Content.Load<SoundEffect> ("sfx\\speed-up.m4a");
 			sfxSlowDown = Game.Content.Load<SoundEffect> ("sfx\\slow-down.m4a");
 
+			music.Add (Game.Content.Load<SoundEffect> ("music\\song001.m4a"));
+			music.Add (Game.Content.Load<SoundEffect> ("music\\song002.m4a"));
+			music.Add (Game.Content.Load<SoundEffect> ("music\\song003.m4a"));
+
 			for (int i = 0; i < layers.Length; i++) {
 				layers [i] = GenerateLayer ();
 			}
@@ -127,6 +134,12 @@ namespace WhatsInTheMountain
 				} else if (ks.IsKeyDown (Keys.Left)) {
 					Rotate (1f);
 				}
+			}
+
+			if (playingMusic == null || playingMusic.State == SoundState.Stopped) {
+				var m = music [random.Next (0, music.Count)];
+				playingMusic = m.CreateInstance ();
+				playingMusic.Play ();
 			}
 
 			float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
