@@ -10,11 +10,15 @@ namespace WhatsInTheMountain
 	{
 		const int tunnelDepth = 20;
 		const float layerDepth = -1f, layerRadius = 1;
+		const float distanceAboveFloor = 0.20f;
+		const float dogDistanceAboveFloor = 0.15f;
+		const float speed = 1.2f; //units / s
+		const float rotationSpeed = 0.5f; // seconds / segment
+		const float fov = 70; //degrees
+		const float dogCatchupSpeed = 0.04f;
 
-		float speed = 1.2f; //units / s
-		float rotationSpeed = 0.5f; // seconds / segment
-		float fov = 70; //degrees
-		float distanceAboveFloor = 0.20f;
+		const float bounceBackSpeed = 0.2f;
+		const float bounceBackRotationSpeed = 1f;
 
 		BasicEffect basicEffect;
 		List<Texture2D> wallTextures = new List<Texture2D> ();
@@ -34,6 +38,8 @@ namespace WhatsInTheMountain
 		float tunnelOffset, dogAnimationOffset;
 		TunnelLayer [] layers = new TunnelLayer [tunnelDepth];
 		int layerOffset;
+
+		float dogDistance = -5;
 
 		int playerRotation;
 		float playerRotationRemaining;
@@ -133,11 +139,14 @@ namespace WhatsInTheMountain
 			}
 
 			var tunnelOffsetChange = speed * elapsedSeconds;
-			if (bouncing) {
-				tunnelOffsetChange *= -0f;
-			}
 
-			tunnelOffset = (tunnelOffset + tunnelOffsetChange);
+			if (bouncing) {
+				dogDistance -= tunnelOffsetChange * dogCatchupSpeed;
+				tunnelOffset = tunnelOffset + tunnelOffsetChange * -bounceBackSpeed;
+			} else {
+				dogDistance += tunnelOffsetChange * dogCatchupSpeed;
+				tunnelOffset = tunnelOffset + tunnelOffsetChange;
+			}
 
 			if (tunnelOffset > 1f) {
 				float floor = (float) Math.Floor (tunnelOffset);
@@ -153,7 +162,7 @@ namespace WhatsInTheMountain
 			if (playerRotationRemaining != 0f) {
 				float direction = playerRotationRemaining > 0 ? 1f : -1f;
 
-				playerRotationRemaining -= direction * elapsedSeconds / rotationSpeed;
+				playerRotationRemaining -= direction * elapsedSeconds / (bouncing? bounceBackRotationSpeed : rotationSpeed);
 
 				float rot;
 
@@ -180,11 +189,9 @@ namespace WhatsInTheMountain
 
 			int dogFrameCount = 10;
 			float dogAnimationLength = 0.5f; //seconds
-			dogAnimationOffset = (dogAnimationOffset + (float)gameTime.ElapsedGameTime.TotalSeconds / dogAnimationLength * speed) %1f;
+			dogAnimationOffset = (dogAnimationOffset + (float)gameTime.ElapsedGameTime.TotalSeconds / dogAnimationLength * speed) % 1f;
 			int dogFrame = (int) (dogAnimationOffset * (float)dogFrameCount);
 
-			float dogDistance = -5;
-			float dogDistanceAboveFloor = 0.15f;
 			UpdateLight (Vector3.Forward, dogDistance);
 			RenderAnimatedFlatQuad (
 				new Vector3 (0, - (1f - dogDistanceAboveFloor), dogDistance),
