@@ -58,9 +58,7 @@ namespace WhatsInTheMountain
 				FogEnabled = true,
 			};
 
-			// turn on the lighting subsystem.
 			basicEffect.LightingEnabled = true;
-			//basicEffect.AmbientLightColor = lightColor * 0.2f;
 			basicEffect.DirectionalLight0.DiffuseColor = lightColor;
 			basicEffect.DirectionalLight0.Enabled = true;
 
@@ -118,7 +116,7 @@ namespace WhatsInTheMountain
 				var previousLayer = layers [previousOffsetIndex];
 				RenderLayer (i, layer, previousLayer);
 			}
-			basicEffect.DirectionalLight0.DiffuseColor = lightColor;
+			UpdateLight (Vector3.Forward, 0);
 
 			int dogFrameCount = 10;
 			float dogAnimationLength = 0.5f; //seconds
@@ -126,7 +124,12 @@ namespace WhatsInTheMountain
 			int dogFrame = (int) (dogAnimationOffset * (float)dogFrameCount);
 
 			float dogDistance = -5;
-			RenderAnimatedFlatQuad (new Vector3 (0, - (1f - distanceAboveFloor), dogDistance), dogTexture, 0.5f, 0.5f, dogFrameCount, dogFrame);
+			float dogDistanceAboveFloor = 0.15f;
+			UpdateLight (Vector3.Forward, dogDistance);
+			RenderAnimatedFlatQuad (
+				new Vector3 (0, - (1f - dogDistanceAboveFloor), dogDistance),
+				dogTexture, 0.5f, 0.5f,
+				dogFrameCount, dogFrame);
 
 			base.Draw (gameTime);
 		}
@@ -134,15 +137,14 @@ namespace WhatsInTheMountain
 		void RenderLayer (int depthIndex, TunnelLayer layer, TunnelLayer previousLayer)
 		{
 			var d = depthIndex * layerDepth + tunnelOffset;
-			//user a softer fall-off than 1/r^2
-			basicEffect.DirectionalLight0.DiffuseColor = lightColor / Math.Max (1, 0.15f * Math.Abs (d));
-			for (int j = 0; j < 8; j++) {
-				basicEffect.Texture = wallTextures [layer.GetTextureID (j)];
-				FillOctagonSectionVertices (quadVertices, d, d + layerDepth, layerRadius, j, layer, previousLayer);
+
+			for (int i = 0; i < 8; i++) {
+				FillOctagonSectionVertices (quadVertices, d, d + layerDepth, layerRadius, i, layer, previousLayer);
 				var lightDirection = quadVertices [0].Position;
 				lightDirection.Normalize ();
-				//ensure light is pointing here from origin
-				basicEffect.DirectionalLight0.Direction = lightDirection;
+				UpdateLight (lightDirection, d);
+				basicEffect.Texture = wallTextures [layer.GetTextureID (i)];
+
 				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 					pass.Apply ();
 					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (
@@ -151,6 +153,13 @@ namespace WhatsInTheMountain
 						clockwiseQuadIndices, 0, 2);
 				}
 			}
+		}
+
+		void UpdateLight (Vector3 direction, float distance)
+		{
+			//user a softer fall-off than 1/r^2
+			basicEffect.DirectionalLight0.Direction = direction;
+			basicEffect.DirectionalLight0.DiffuseColor = lightColor / Math.Max (1,  0.5f * Math.Abs (distance));
 		}
 
 		void RenderFlatQuad (Vector3 origin, Texture2D texture, float width, float height)
@@ -200,6 +209,10 @@ namespace WhatsInTheMountain
 			Vector2 textureUpperRight = new Vector2 (xTextureEnd, 0.0f);
 			Vector2 textureLowerLeft = new Vector2 (xTextureStart, 1.0f);
 			Vector2 textureLowerRight = new Vector2 (xTextureEnd, 1.0f);
+
+			for (int i = 0; i < vertices.Length; i++) {
+				vertices [i].Normal = normal;
+			}
 
 			// Set the position and texture coordinate for each
 			// vertex
