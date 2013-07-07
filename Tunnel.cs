@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 
 namespace WhatsInTheMountain
 {
@@ -11,6 +12,7 @@ namespace WhatsInTheMountain
 		const float layerDepth = -1, layerRadius = 1;
 
 		float speed = 1.2f; //units / s
+		float rotationSpeed = 0.5f; // seconds / segment
 		float fov = 70; //degrees
 		float distanceAboveFloor = 0.20f;
 
@@ -31,6 +33,9 @@ namespace WhatsInTheMountain
 		float tunnelOffset, dogAnimationOffset;
 		TunnelLayer [] layers = new TunnelLayer [tunnelDepth];
 		int layerOffset;
+
+		int playerRotation;
+		float playerRotationRemaining;
 
 		public Tunnel (Game game) : base (game)
 		{
@@ -89,14 +94,24 @@ namespace WhatsInTheMountain
 
 		public override void Update (GameTime gameTime)
 		{
+			KeyboardState ks = Keyboard.GetState ();
+			if (playerRotationRemaining == 0f) {
+				if (ks.IsKeyDown (Keys.Left)) {
+					playerRotationRemaining = -1f;
+				} else if (ks.IsKeyDown (Keys.Right)) {
+					playerRotationRemaining = 1f;
+				}
+			}
+
 			base.Update (gameTime);
 		}
 
 		public override void Draw (GameTime gameTime)
 		{
 			GraphicsDevice.Clear (Color.Black);
+			float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-			tunnelOffset = (tunnelOffset + speed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+			tunnelOffset = (tunnelOffset + speed * elapsedSeconds);
 
 			if (tunnelOffset > 1f) {
 				float floor = (float) Math.Floor (tunnelOffset);
@@ -107,6 +122,24 @@ namespace WhatsInTheMountain
 					var offsetIndex = (layerOffset - i + layers.Length) % layers.Length;
 					layers [offsetIndex] = GenerateLayer ();
 				}
+			}
+
+			if (playerRotationRemaining != 0f) {
+				float direction = playerRotationRemaining > 0 ? 1f : -1f;
+
+				playerRotationRemaining -= direction * elapsedSeconds / rotationSpeed;
+
+				float rot;
+
+				if (playerRotationRemaining * direction < 0) {
+					playerRotationRemaining = 0f;
+					playerRotation += (int)direction;
+					rot = playerRotation;
+				} else {
+					rot = playerRotation + (direction - playerRotationRemaining);
+				}
+
+				basicEffect.World = Matrix.CreateRotationZ ((float) (Math.PI * rot / 4f));
 			}
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
@@ -142,7 +175,7 @@ namespace WhatsInTheMountain
 				FillOctagonSectionVertices (quadVertices, d, d + layerDepth, layerRadius, i, layer, previousLayer);
 				var lightDirection = quadVertices [0].Position;
 				lightDirection.Normalize ();
-				UpdateLight (lightDirection, d);
+				UpdateLight (Vector3.Transform (lightDirection, basicEffect.World), d);
 				basicEffect.Texture = wallTextures [layer.GetTextureID (i)];
 
 				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
@@ -190,7 +223,7 @@ namespace WhatsInTheMountain
 		{
 			//user a softer fall-off than 1/r^2
 			basicEffect.DirectionalLight0.Direction = direction;
-			basicEffect.DirectionalLight0.DiffuseColor = lightColor / Math.Max (1,  0.5f * Math.Abs (distance));
+			basicEffect.DirectionalLight0.DiffuseColor = lightColor / Math.Max (1,  0.3f * Math.Abs (distance));
 		}
 
 		void RenderFlatQuad (Vector3 origin, Texture2D texture, float width, float height)
