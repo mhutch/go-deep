@@ -118,6 +118,9 @@ namespace WhatsInTheMountain
 
 		public override void Update (GameTime gameTime)
 		{
+			if (!Enabled)
+				return;
+
 			//check for rotation commands
 			KeyboardState ks = Keyboard.GetState ();
 			if (playerRotationRemaining == 0f) {
@@ -217,6 +220,9 @@ namespace WhatsInTheMountain
 
 		public override void Draw (GameTime gameTime)
 		{
+			if (!Enabled)
+				return;
+
 			GraphicsDevice.Clear (Color.Black);
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
@@ -339,7 +345,7 @@ namespace WhatsInTheMountain
 			}
 		}
 
-		void FillQuadVertices (
+		public static void FillQuadVertices (
 			VertexPositionNormalTexture[] vertices, Vector3 origin, Vector3 normal, Vector3 up,
 			float width, float height,
 			float xTextureStart = 0f, float xTextureEnd = 1f)

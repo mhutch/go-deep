@@ -10,6 +10,9 @@ namespace WhatsInTheMountain
 	{
 		readonly GraphicsDeviceManager graphics;
 
+		Tunnel tunnel;
+		Cinematic intro;
+
 		public DogGame ()
 		{
 			const int preferredWidth = 1024;
@@ -23,11 +26,28 @@ namespace WhatsInTheMountain
 			};
 			graphics.IsFullScreen = false;
 
-			Components.Add (new Tunnel (this));
+			intro = new Cinematic (this, null, Color.Black) {
+				{ "intro1", 1f },
+				{ "intro2", 1f },
+				{ "intro3", 1f },
+				{ "intro4", 1f },
+				{ 1f },
+			};
+
+			tunnel = new Tunnel (this);
+			tunnel.Enabled = false;
+
+			Components.Add (tunnel);
+			Components.Add (intro);
 		}
 
 		protected override void Update (GameTime gameTime)
 		{
+			if (intro.Enabled && intro.Ended) {
+				intro.Enabled = false;
+				tunnel.Enabled = true;
+			}
+
 			base.Update (gameTime);
 		}
 	}
