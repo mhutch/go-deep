@@ -157,6 +157,7 @@ namespace WhatsInTheMountain
 
 				if (playerRotationRemaining * direction < 0) {
 					playerRotationRemaining = 0f;
+					bouncing = false;
 					playerRotation += (int)direction;
 					rot = playerRotation;
 				} else {
