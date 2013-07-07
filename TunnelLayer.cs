@@ -20,11 +20,19 @@ namespace WhatsInTheMountain
 			}
 
 			fixed (int *buf = obstacleID) {
+				int offset = random.Next (0, corners - 1);
 				for (int i = 0; i < corners; i++) {
+					int offsetIdx = (offset + i) % corners;
+					//avoid runs of three or more adjacent obstacles, complicates collision handling
+					if (offsetIdx > 1 && buf [(offsetIdx - 1) % corners] >= 0 && buf [(offsetIdx - 2) % corners] >= 0) {
+						buf [offsetIdx] = -1;
+						continue;
+					}
+
 					if (random.NextDouble () <= obChance)
-						buf [i] = random.Next (obMin, obMax);
+					    buf [offsetIdx] = random.Next (obMin, obMax);
 					else
-						buf [i] = -1;
+					    buf [offsetIdx] = -1;
 				}
 			}
 
