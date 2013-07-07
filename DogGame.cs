@@ -42,17 +42,17 @@ namespace GoDeep
 
 			//12s long
 			win = new Cinematic (this, "music\\win.m4a", Color.Black) {
-				{ "cine\\ending1", 3f },
-				{ "cine\\ending2", 3f },
-				{ "cine\\ending3", 3f },
-				{ "cine\\ending4", 3f },
-				{ 0.0f },
+				{ "cine\\ending1", 2f },
+				{ "cine\\ending2", 2f },
+				{ "cine\\ending3", 2f },
+				{ "cine\\ending4", 2f },
+				{ "cine\\win", 15f },
 			};
 			win.Enabled = false;
 
 			//17s long
 			lose = new Cinematic (this, "music\\lose.m4a", Color.Black) {
-				{ "cine\\gameover", 17.0f },
+				{ "cine\\gameover", 16.0f },
 			};
 			lose.Enabled = false;
 

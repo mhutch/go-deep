@@ -79,9 +79,6 @@
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>Cocos2D-XNA\MacOS\Debug\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="Lidgren.Network">
-      <HintPath>MonoGame\MacOS\Debug\Lidgren.Network.dll</HintPath>
-    </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>MonoGame\MacOS\Debug\MonoGame.Framework.dll</HintPath>
     </Reference>
@@ -149,5 +146,9 @@
     <BundleResource Include="Resources\Content\music\title.m4a" />
     <BundleResource Include="Resources\Content\cine\gameover.png" />
     <BundleResource Include="Resources\Content\cine\titlescreen.png" />
+    <BundleResource Include="Resources\Content\walls\dirt4.png" />
+    <BundleResource Include="Resources\Content\walls\dirt5.png" />
+    <BundleResource Include="Resources\Content\walls\dirt6.png" />
+    <BundleResource Include="Resources\Content\cine\win.png" />
   </ItemGroup>
 </Project>
