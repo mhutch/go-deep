@@ -124,9 +124,20 @@ namespace WhatsInTheMountain
 			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.30f, 0.1f);
 		}
 
+		public bool Ended { get; private set; }
+
+		public bool Won { get; private set; }
+
+		void End (bool won)
+		{
+			playingMusic.Stop ();
+			Ended = true;
+			Won = won;
+		}
+
 		public override void Update (GameTime gameTime)
 		{
-			if (!Enabled)
+			if (!Enabled || Ended)
 				return;
 
 			//check for rotation commands
@@ -136,8 +147,15 @@ namespace WhatsInTheMountain
 					Rotate (-1f);
 				} else if (ks.IsKeyDown (Keys.Left)) {
 					Rotate (1f);
+				} else if (ks.IsKeyDown (Keys.W)) {
+					End (true);
+				} else if (ks.IsKeyDown (Keys.L)) {
+					End (false);
 				}
 			}
+
+			if (Ended)
+				return;
 
 			if (playingMusic == null || playingMusic.State == SoundState.Stopped) {
 				var m = music [random.Next (0, music.Count)];
@@ -217,9 +235,9 @@ namespace WhatsInTheMountain
 
 			//detect win/loss
 			if (dogDistance > winDistance) {
-				Console.WriteLine ("YOU WIN");
+				End (true);
 			} else if (dogDistance < loseDistance) {
-				Console.WriteLine ("YOU LOSE");
+				End (false);
 			}
 
 			base.Update (gameTime);
@@ -237,7 +255,7 @@ namespace WhatsInTheMountain
 
 		public override void Draw (GameTime gameTime)
 		{
-			if (!Enabled)
+			if (!Enabled || Ended)
 				return;
 
 			GraphicsDevice.Clear (Color.Black);

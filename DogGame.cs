@@ -11,7 +11,7 @@ namespace WhatsInTheMountain
 		readonly GraphicsDeviceManager graphics;
 
 		Tunnel tunnel;
-		Cinematic intro;
+		Cinematic intro, lose, win;
 
 		public DogGame ()
 		{
@@ -26,26 +26,66 @@ namespace WhatsInTheMountain
 			};
 			graphics.IsFullScreen = false;
 
+			//18s long
 			intro = new Cinematic (this, "music\\cinematic.m4a", Color.Black) {
 				{ "cine\\intro1", 3.5f },
 				{ "cine\\intro2", 4.5f },
-				{ "cine\\intro3", 3.5f },
-				{ "cine\\intro4", 7f },
-				{ 0.5f },
+				{ "cine\\intro3", 2.5f },
+				{ "cine\\intro4", 7.5f },
+				{ 0.0f },
 			};
+
+			//12s long
+			win = new Cinematic (this, "music\\win.m4a", Color.Black) {
+				{ "cine\\ending1", 3f },
+				{ "cine\\ending2", 3f },
+				{ "cine\\ending3", 3f },
+				{ "cine\\ending4", 3f },
+				{ 0.0f },
+			};
+			win.Enabled = false;
+
+			//17s long
+			lose = new Cinematic (this, "music\\lose.m4a", Color.Black) {
+				{ 17.0f },
+			};
+			lose.Enabled = false;
 
 			tunnel = new Tunnel (this);
 			tunnel.Enabled = false;
 
 			Components.Add (tunnel);
 			Components.Add (intro);
+			Components.Add (win);
+			Components.Add (lose);
 		}
 
 		protected override void Update (GameTime gameTime)
 		{
-			if (intro.Enabled && intro.Ended) {
-				intro.Enabled = false;
-				tunnel.Enabled = true;
+			if (intro.Enabled) {
+				if (intro.Ended) {
+					intro.Enabled = false;
+					tunnel.Enabled = true;
+				}
+			} else if (win.Enabled) {
+				if (win.Ended) {
+					win.Enabled = false;
+					intro.Enabled = true;
+				}
+			} else if (lose.Enabled) {
+				if (lose.Ended) {
+					lose.Enabled = false;
+					intro.Enabled = true;
+				}
+			} else if (tunnel.Enabled) {
+				if (tunnel.Ended) {
+					tunnel.Enabled = false;
+					if (tunnel.Won) {
+						win.Enabled = true;
+					} else {
+						lose.Enabled = true;
+					}
+				}
 			}
 
 			base.Update (gameTime);
