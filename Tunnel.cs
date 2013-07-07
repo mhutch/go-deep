@@ -84,7 +84,7 @@ namespace WhatsInTheMountain
 
 		TunnelLayer GenerateLayer ()
 		{
-			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.1f);
+			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.05f, 0.1f);
 		}
 
 		public override void Update (GameTime gameTime)
@@ -145,6 +145,37 @@ namespace WhatsInTheMountain
 				UpdateLight (lightDirection, d);
 				basicEffect.Texture = wallTextures [layer.GetTextureID (i)];
 
+				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
+					pass.Apply ();
+					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (
+						PrimitiveType.TriangleList,
+						quadVertices, 0, 4,
+						clockwiseQuadIndices, 0, 2);
+				}
+
+				var ob = layer.GetObstacleID (i);
+				if (ob < 0) {
+					continue;
+				}
+
+				basicEffect.Texture = wallTextures [ob];
+
+				// obstacles's origin is average of the section it's on
+				Vector3 obstacleOrigin = new Vector3 ();
+				for (int j = 0; j < quadVertices.Length; j++) {
+					obstacleOrigin += quadVertices [j].Position;
+				}
+				obstacleOrigin /= quadVertices.Length;
+
+				const float obstacleSize = 0.5f;
+
+				//lifted off it a little
+				obstacleOrigin += quadVertices [0].Normal * obstacleSize / 2f;
+
+				UpdateLight (Vector3.Forward, d);
+
+				FillQuadVertices (quadVertices, obstacleOrigin, Vector3.Backward, quadVertices [0].Normal, obstacleSize, obstacleSize);
+				basicEffect.Texture = wallTextures [ob];
 				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 					pass.Apply ();
 					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (

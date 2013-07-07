@@ -11,7 +11,7 @@ namespace WhatsInTheMountain
 		fixed int obstacleID [corners];
 		fixed float cornerOffsets [corners * 3];
 
-		public TunnelLayer (Random random, int texMin, int texMax, int obMin, int obMax, float offsetScale)
+		public TunnelLayer (Random random, int texMin, int texMax, int obMin, int obMax, float obChance, float offsetScale)
 		{
 			fixed (int *buf = textureID) {
 				for (int i = 0; i < corners; i++) {
@@ -21,7 +21,10 @@ namespace WhatsInTheMountain
 
 			fixed (int *buf = obstacleID) {
 				for (int i = 0; i < corners; i++) {
-					buf [i] = random.Next (obMin, obMax);
+					if (random.NextDouble () <= obChance)
+						buf [i] = random.Next (obMin, obMax);
+					else
+						buf [i] = -1;
 				}
 			}
 
