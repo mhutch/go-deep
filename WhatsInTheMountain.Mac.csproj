@@ -113,7 +113,6 @@
     <BundleResource Include="Resources\Content\cine\intro3.png" />
     <BundleResource Include="Resources\Content\cine\intro4.png" />
     <BundleResource Include="Resources\Content\cine\splash.png" />
-    <BundleResource Include="Resources\Content\cine\win1.png" />
     <BundleResource Include="Resources\Content\music\cinematic.m4a" />
     <BundleResource Include="Resources\Content\music\lose.m4a" />
     <BundleResource Include="Resources\Content\music\song001.m4a" />
@@ -144,5 +143,10 @@
     <BundleResource Include="Resources\Content\walls\snow1.png" />
     <BundleResource Include="Resources\Content\walls\snow2.png" />
     <BundleResource Include="Resources\Content\sfx\hit-boulder.m4a" />
+    <BundleResource Include="Resources\Content\music\slowdown.m4a" />
+    <BundleResource Include="Resources\Content\music\speedup.m4a" />
+    <BundleResource Include="Resources\Content\music\title.m4a" />
+    <BundleResource Include="Resources\Content\cine\gameover.png" />
+    <BundleResource Include="Resources\Content\cine\titlescreen.png" />
   </ItemGroup>
 </Project>

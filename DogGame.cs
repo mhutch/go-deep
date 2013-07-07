@@ -11,7 +11,7 @@ namespace WhatsInTheMountain
 		readonly GraphicsDeviceManager graphics;
 
 		Tunnel tunnel;
-		Cinematic intro, lose, win;
+		Cinematic intro, lose, win, title;
 
 		public DogGame ()
 		{
@@ -26,6 +26,10 @@ namespace WhatsInTheMountain
 			};
 			graphics.IsFullScreen = false;
 
+			title = new Cinematic (this, "music\\title.m4a", Color.Black, true) {
+				{ "cine\\titlescreen", 0f },
+			};
+
 			//18s long
 			intro = new Cinematic (this, "music\\cinematic.m4a", Color.Black) {
 				{ "cine\\intro1", 3.5f },
@@ -34,6 +38,7 @@ namespace WhatsInTheMountain
 				{ "cine\\intro4", 7.5f },
 				{ 0.0f },
 			};
+			intro.Enabled = false;
 
 			//12s long
 			win = new Cinematic (this, "music\\win.m4a", Color.Black) {
@@ -47,13 +52,14 @@ namespace WhatsInTheMountain
 
 			//17s long
 			lose = new Cinematic (this, "music\\lose.m4a", Color.Black) {
-				{ 17.0f },
+				{ "cine\\gameover", 17.0f },
 			};
 			lose.Enabled = false;
 
 			tunnel = new Tunnel (this);
 			tunnel.Enabled = false;
 
+			Components.Add (title);
 			Components.Add (tunnel);
 			Components.Add (intro);
 			Components.Add (win);
@@ -71,14 +77,14 @@ namespace WhatsInTheMountain
 			} else if (win.Enabled) {
 				if (win.Ended) {
 					win.Enabled = false;
-					intro.Reset ();
-					intro.Enabled = true;
+					title.Reset ();
+					title.Enabled = true;
 				}
 			} else if (lose.Enabled) {
 				if (lose.Ended) {
 					lose.Enabled = false;
-					intro.Reset ();
-					intro.Enabled = true;
+					title.Reset ();
+					title.Enabled = true;
 				}
 			} else if (tunnel.Enabled) {
 				if (tunnel.Ended) {
@@ -90,6 +96,12 @@ namespace WhatsInTheMountain
 						lose.Reset ();
 						lose.Enabled = true;
 					}
+				}
+			} else if (title.Enabled) {
+				if (title.Ended) {
+					title.Enabled = false;
+					intro.Reset ();
+					intro.Enabled = true;
 				}
 			}
 

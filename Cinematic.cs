@@ -21,14 +21,16 @@ namespace WhatsInTheMountain
 		Color backgroundColor;
 		SoundEffectInstance musicInstance;
 		int frameIndex;
+		bool loop;
 
 		VertexPositionNormalTexture[] quadVertices = new VertexPositionNormalTexture[4];
 		short[] clockwiseQuadIndices = { 0, 1, 2, 2, 1, 3 };
 
-		public Cinematic (Game game, string musicName, Color backgroundColor) : base (game)
+		public Cinematic (Game game, string musicName, Color backgroundColor, bool loop = false) : base (game)
 		{
 			this.musicName = musicName;
 			this.backgroundColor = backgroundColor;
+			this.loop = loop;
 		}
 
 		public void Add (float duration)
@@ -98,6 +100,8 @@ namespace WhatsInTheMountain
 				if (music != null) {
 					musicInstance = music.CreateInstance ();
 					musicInstance.Volume = 0.7f;
+					if (loop)
+						musicInstance.IsLooped = true;
 					musicInstance.Play ();
 				}
 			}
@@ -122,7 +126,11 @@ namespace WhatsInTheMountain
 			}
 
 			if (frameIndex == -1) {
-				Ended = true;
+				if (loop) {
+					frameIndex = 0;
+				} else if (musicInstance.State == SoundState.Stopped) {
+					Ended = true;
+				}
 			}
 
 			base.Update (gameTime);
