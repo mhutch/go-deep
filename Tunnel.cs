@@ -13,7 +13,7 @@ namespace WhatsInTheMountain
 		const float layerDepth = -1f, layerRadius = 1;
 		const float distanceAboveFloor = 0.20f;
 		const float dogDistanceAboveFloor = 0.15f;
-		const float speed = 1.2f; //units / s
+		const float speed = 3f; //units / s
 		const float rotationSpeed = 0.5f; // seconds / segment
 		const float fov = 70; //degrees
 		const float dogCatchupSpeed = 0.04f;
