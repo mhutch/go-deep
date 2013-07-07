@@ -30,8 +30,8 @@ namespace WhatsInTheMountain
 				{ "cine\\intro1", 3.5f },
 				{ "cine\\intro2", 4.5f },
 				{ "cine\\intro3", 3.5f },
-				{ "cine\\intro4", 6f },
-				{ 1f },
+				{ "cine\\intro4", 7f },
+				{ 0.5f },
 			};
 
 			tunnel = new Tunnel (this);
