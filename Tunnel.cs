@@ -159,6 +159,10 @@ namespace WhatsInTheMountain
 				tunnelOffset = tunnelOffset + tunnelOffsetChange;
 			}
 
+			if (tunnelOffset < 0) {
+				tunnelOffset = 0;
+			}
+
 			//cygle the layer offset if necessary, and fill in new layers
 			if (tunnelOffset > 1f) {
 				float floor = (float) Math.Floor (tunnelOffset);
