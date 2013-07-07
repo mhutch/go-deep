@@ -29,6 +29,7 @@ namespace WhatsInTheMountain
 		List<Texture2D> obstacleTextures = new List<Texture2D> ();
 		Vector3 lightColor = new Vector3 (1.0f, 1.0f, 1.0f);
 
+		SoundEffect sfxHitBoulder, sfxLose, sfxPsychedelic, sfxWin, sfxRotate, sfxSpeedUp, sfxSlowDown;
 		Matrix view, projection;
 		Vector3 cameraPosition;
 		VertexPositionNormalTexture[] quadVertices = new VertexPositionNormalTexture[4];
@@ -91,6 +92,14 @@ namespace WhatsInTheMountain
 			}
 			dogTexture = Game.Content.Load<Texture2D> ("dog_run");
 			obstacleTextures.Add (Game.Content.Load<Texture2D> ("rocks"));
+
+			sfxHitBoulder = Game.Content.Load<SoundEffect> ("What'sInHitBoulderSFX");
+			sfxLose = Game.Content.Load<SoundEffect> ("What'sInLoseSFX");
+			sfxPsychedelic = Game.Content.Load<SoundEffect> ("What'sInPsychedelicSFX");
+			sfxWin = Game.Content.Load<SoundEffect> ("What'sInWinSFX");
+			sfxRotate = Game.Content.Load<SoundEffect> ("What'sInRotateSFX");
+			sfxSpeedUp = Game.Content.Load<SoundEffect> ("What'sInSpeedUpSFX");
+			sfxSlowDown = Game.Content.Load<SoundEffect> ("What'sInSlowDownSFX");
 
 			for (int i = 0; i < layers.Length; i++) {
 				layers [i] = GenerateLayer ();

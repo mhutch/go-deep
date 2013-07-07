@@ -116,5 +116,14 @@
     <BundleResource Include="Resources\Content\rainbow.xnb" />
     <BundleResource Include="Resources\Content\rockface.xnb" />
     <BundleResource Include="Resources\Content\rocks.xnb" />
+    <BundleResource Include="Resources\Content\What%27sInHitBoulderSFX.wav" />
+    <BundleResource Include="Resources\Content\What%27sInLoseCinematic.wav" />
+    <BundleResource Include="Resources\Content\What%27sInLoseSFX.wav" />
+    <BundleResource Include="Resources\Content\What%27sInPsychedelicSFX.wav" />
+    <BundleResource Include="Resources\Content\What%27sInRotateSFX.wav" />
+    <BundleResource Include="Resources\Content\What%27sInSlowdownSFX.wav" />
+    <BundleResource Include="Resources\Content\What%27sInSpeedUpSFX.wav" />
+    <BundleResource Include="Resources\Content\What%27sInWinCinematic.wav" />
+    <BundleResource Include="Resources\Content\What%27sInWinSFX.wav" />
   </ItemGroup>
 </Project>
