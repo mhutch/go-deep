@@ -106,6 +106,7 @@ namespace WhatsInTheMountain
 
 		public override void Update (GameTime gameTime)
 		{
+			//check for rotation commands
 			KeyboardState ks = Keyboard.GetState ();
 			if (playerRotationRemaining == 0f) {
 				if (ks.IsKeyDown (Keys.Right)) {
@@ -115,22 +116,9 @@ namespace WhatsInTheMountain
 				}
 			}
 
-			if (dogDistance > winDistance) {
-				Console.WriteLine ("YOU WIN");
-			} else if (dogDistance < loseDistance) {
-				Console.WriteLine ("YOU LOSE");
-			}
-
-			base.Update (gameTime);
-		}
-
-		public override void Draw (GameTime gameTime)
-		{
-			GraphicsDevice.Clear (Color.Black);
-
 			float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-			//simple collision detection
+			//simple collision detection, bounce off rocks
 			if (playerRotationRemaining == 0f) {
 				if (layers [layerOffset].GetObstacleID ((playerRotation + 3) % 8) >= 0) {
 					//prefer to rotate away from adjacent obstacles if possible
@@ -147,6 +135,7 @@ namespace WhatsInTheMountain
 				}
 			}
 
+			//update tunnel offset and distance of dog
 			var tunnelOffsetChange = speed * elapsedSeconds;
 
 			if (bouncing) {
@@ -157,6 +146,7 @@ namespace WhatsInTheMountain
 				tunnelOffset = tunnelOffset + tunnelOffsetChange;
 			}
 
+			//cygle the layer offset if necessary, and fill in new layers
 			if (tunnelOffset > 1f) {
 				float floor = (float) Math.Floor (tunnelOffset);
 				tunnelOffset = tunnelOffset - floor;
@@ -168,6 +158,7 @@ namespace WhatsInTheMountain
 				}
 			}
 
+			//compute rotation updates
 			if (playerRotationRemaining != 0f) {
 				float direction = playerRotationRemaining > 0 ? 1f : -1f;
 
@@ -184,8 +175,22 @@ namespace WhatsInTheMountain
 					rot = playerRotation + (direction - playerRotationRemaining);
 				}
 
-				basicEffect.World = Matrix.CreateRotationZ ((float) (Math.PI * rot / 4f));
+				basicEffect.World = Matrix.CreateRotationZ ((float)(Math.PI * rot / 4f));// *  Matrix.CreateScale (1f, 1f, 3f);
 			}
+
+			//detect win/loss
+			if (dogDistance > winDistance) {
+				Console.WriteLine ("YOU WIN");
+			} else if (dogDistance < loseDistance) {
+				Console.WriteLine ("YOU LOSE");
+			}
+
+			base.Update (gameTime);
+		}
+
+		public override void Draw (GameTime gameTime)
+		{
+			GraphicsDevice.Clear (Color.Black);
 
 			for (int i = layers.Length - 1; i >= 0; i--) {
 				var offsetIndex = (layerOffset + i + layers.Length) % layers.Length;
