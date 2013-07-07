@@ -7,7 +7,7 @@ using MonoMac.AudioToolbox;
 using Microsoft.Xna.Framework.Input;
 
 
-namespace WhatsInTheMountain
+namespace GoDeep
 {
 	public class Cinematic : DrawableGameComponent, IEnumerable<Cinematic.Frame>
 	{

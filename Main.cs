@@ -2,7 +2,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Diagnostics;
 
-namespace WhatsInTheMountain
+namespace GoDeep
 {
 	class Program : NSApplicationDelegate 
 	{

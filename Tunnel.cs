@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 
-namespace WhatsInTheMountain
+namespace GoDeep
 {
 	public class Tunnel : DrawableGameComponent
 	{

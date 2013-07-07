@@ -8,9 +8,9 @@
     <ProjectGuid>{7464F397-28BC-45B8-A8D4-AD4EB76FEB82}</ProjectGuid>
     <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>WhatsInTheMountain</RootNamespace>
+    <RootNamespace>GoDeep</RootNamespace>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
-    <AssemblyName>WhatsInTheMountain</AssemblyName>
+    <AssemblyName>GoDeep</AssemblyName>
     <SuppressXamMacUpsell>True</SuppressXamMacUpsell>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -65,6 +65,7 @@
     <EnableCodeSigning>true</EnableCodeSigning>
     <EnablePackageSigning>true</EnablePackageSigning>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <I18n />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

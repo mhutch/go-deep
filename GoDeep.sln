@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatsInTheMountain.Mac", "WhatsInTheMountain.Mac.csproj", "{7464F397-28BC-45B8-A8D4-AD4EB76FEB82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoDeep.Mac", "GoDeep.Mac.csproj", "{7464F397-28BC-45B8-A8D4-AD4EB76FEB82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +18,6 @@ Global
 		{7464F397-28BC-45B8-A8D4-AD4EB76FEB82}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = WhatsInTheMountain.Mac.csproj
+		StartupItem = GoDeep.Mac.csproj
 	EndGlobalSection
 EndGlobal

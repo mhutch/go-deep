@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace WhatsInTheMountain
+namespace GoDeep
 {
 
 	public unsafe struct TunnelLayer
