@@ -106,5 +106,15 @@
     <BundleResource Include="Resources\Content\earth0.png" />
     <BundleResource Include="Resources\Content\earth1.png" />
     <BundleResource Include="Resources\Content\dog_run.png" />
+    <BundleResource Include="Resources\Content\icepillar.png" />
+    <BundleResource Include="Resources\Content\intro1.png" />
+    <BundleResource Include="Resources\Content\intro2.png" />
+    <BundleResource Include="Resources\Content\intro3.png" />
+    <BundleResource Include="Resources\Content\intro4.png" />
+    <BundleResource Include="Resources\Content\powerup_slow.png" />
+    <BundleResource Include="Resources\Content\powerup_speed.png" />
+    <BundleResource Include="Resources\Content\rainbow.png" />
+    <BundleResource Include="Resources\Content\rockface.png" />
+    <BundleResource Include="Resources\Content\rocks.png" />
   </ItemGroup>
 </Project>

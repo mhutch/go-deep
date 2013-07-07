@@ -19,6 +19,7 @@ namespace WhatsInTheMountain
 		BasicEffect basicEffect;
 		List<Texture2D> wallTextures = new List<Texture2D> ();
 		Texture2D dogTexture;
+		List<Texture2D> obstacleTextures = new List<Texture2D> ();
 		Vector3 lightColor = new Vector3 (1.0f, 1.0f, 1.0f);
 
 		Matrix view, projection;
@@ -80,6 +81,7 @@ namespace WhatsInTheMountain
 				wallTextures.Add (Game.Content.Load<Texture2D> ("earth" + i));
 			}
 			dogTexture = Game.Content.Load<Texture2D> ("dog_run");
+			obstacleTextures.Add (Game.Content.Load<Texture2D> ("rocks"));
 
 			for (int i = 0; i < layers.Length; i++) {
 				layers [i] = GenerateLayer ();
@@ -225,7 +227,7 @@ namespace WhatsInTheMountain
 				}
 				obstacleOrigin /= quadVertices.Length;
 
-				const float obstacleSize = 0.5f;
+				const float obstacleSize = 0.4f;
 
 				//lifted off it a little
 				obstacleOrigin += quadVertices [0].Normal * obstacleSize / 2f;
@@ -233,7 +235,7 @@ namespace WhatsInTheMountain
 				UpdateLight (Vector3.Forward, d);
 
 				FillQuadVertices (quadVertices, obstacleOrigin, Vector3.Backward, quadVertices [0].Normal, obstacleSize, obstacleSize);
-				basicEffect.Texture = wallTextures [ob];
+				basicEffect.Texture = obstacleTextures [ob];
 				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
 					pass.Apply ();
 					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (
