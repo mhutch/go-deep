@@ -224,25 +224,24 @@ namespace WhatsInTheMountain
 				var previousOffsetIndex = (layerOffset + i + 1 + layers.Length) % layers.Length;
 				var layer = layers [offsetIndex];
 				var previousLayer = layers [previousOffsetIndex];
-				RenderLayer (i, layer, previousLayer);
+				RenderLayer (gameTime, i, layer, previousLayer);
 			}
-			UpdateLight (Vector3.Forward, 0);
-
-			int dogFrameCount = 10;
-			float dogAnimationLength = 0.5f; //seconds
-			dogAnimationOffset = (dogAnimationOffset + (float)gameTime.ElapsedGameTime.TotalSeconds / dogAnimationLength * speed) % 1f;
-			int dogFrame = (int) (dogAnimationOffset * (float)dogFrameCount);
-
-			UpdateLight (Vector3.Forward, dogDistance);
-			RenderAnimatedFlatQuad (
-				new Vector3 (0, - (1f - dogDistanceAboveFloor), dogDistance),
-				dogTexture, 0.5f, 0.5f,
-				dogFrameCount, dogFrame);
 
 			base.Draw (gameTime);
 		}
 
-		void RenderLayer (int depthIndex, TunnelLayer layer, TunnelLayer previousLayer)
+		void RenderDog (GameTime gameTime)
+		{
+			int dogFrameCount = 10;
+			float dogAnimationLength = 0.5f;
+			//seconds
+			dogAnimationOffset = (dogAnimationOffset + (float)gameTime.ElapsedGameTime.TotalSeconds / dogAnimationLength * speed) % 1f;
+			int dogFrame = (int)(dogAnimationOffset * (float)dogFrameCount);
+			UpdateLight (Vector3.Forward, dogDistance);
+			RenderAnimatedFlatQuad (new Vector3 (0, -(1f - dogDistanceAboveFloor), dogDistance), dogTexture, 0.5f, 0.5f, dogFrameCount, dogFrame);
+		}
+
+		void RenderLayer (GameTime gameTime, int depthIndex, TunnelLayer layer, TunnelLayer previousLayer)
 		{
 			var d = (depthIndex - tunnelOffset) * layerDepth;
 
@@ -261,12 +260,12 @@ namespace WhatsInTheMountain
 						clockwiseQuadIndices, 0, 2);
 				}
 
+				bool dogInLayer = i == 0 && d >= dogDistance && (d + layerDepth) < dogDistance;
+
 				var ob = layer.GetObstacleID (i);
-				if (ob < 0) {
+				if (ob < 0 && !dogInLayer) {
 					continue;
 				}
-
-				basicEffect.Texture = wallTextures [ob];
 
 				// obstacles's origin is average of the section it's on
 				Vector3 obstacleOrigin = new Vector3 ();
@@ -278,18 +277,27 @@ namespace WhatsInTheMountain
 				const float obstacleSize = 0.4f;
 
 				//lifted off it a little
-				obstacleOrigin += quadVertices [0].Normal * obstacleSize / 2f;
+				obstacleOrigin += quadVertices [0].Normal * obstacleSize / 1.5f;
 
-				UpdateLight (Vector3.Forward, d);
+				if (dogInLayer && dogDistance < obstacleOrigin.Z) {
+					RenderDog (gameTime);
+				}
 
-				FillQuadVertices (quadVertices, obstacleOrigin, Vector3.Backward, quadVertices [0].Normal, obstacleSize, obstacleSize);
-				basicEffect.Texture = obstacleTextures [ob];
-				foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
-					pass.Apply ();
-					GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (
-						PrimitiveType.TriangleList,
-						quadVertices, 0, 4,
-						clockwiseQuadIndices, 0, 2);
+				if (ob >= 0) {
+					UpdateLight (Vector3.Forward, d);
+					FillQuadVertices (quadVertices, obstacleOrigin, Vector3.Backward, quadVertices [0].Normal, obstacleSize, obstacleSize);
+					basicEffect.Texture = obstacleTextures [ob];
+					foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes) {
+						pass.Apply ();
+						GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionNormalTexture> (
+							PrimitiveType.TriangleList,
+							quadVertices, 0, 4,
+							clockwiseQuadIndices, 0, 2);
+					}
+				}
+
+				if (dogInLayer && dogDistance >= obstacleOrigin.Z) {
+					RenderDog (gameTime);
 				}
 			}
 		}
