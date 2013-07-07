@@ -9,7 +9,7 @@ namespace WhatsInTheMountain
 	public class Tunnel : DrawableGameComponent
 	{
 		const int tunnelDepth = 20;
-		const float layerDepth = -1, layerRadius = 1;
+		const float layerDepth = -1f, layerRadius = 1;
 
 		float speed = 1.2f; //units / s
 		float rotationSpeed = 0.5f; // seconds / segment
@@ -169,7 +169,7 @@ namespace WhatsInTheMountain
 
 		void RenderLayer (int depthIndex, TunnelLayer layer, TunnelLayer previousLayer)
 		{
-			var d = depthIndex * layerDepth + tunnelOffset;
+			var d = (depthIndex - tunnelOffset) * layerDepth;
 
 			for (int i = 0; i < 8; i++) {
 				FillOctagonSectionVertices (quadVertices, d, d + layerDepth, layerRadius, i, layer, previousLayer);
