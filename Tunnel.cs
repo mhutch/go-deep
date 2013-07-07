@@ -36,6 +36,7 @@ namespace WhatsInTheMountain
 
 		int playerRotation;
 		float playerRotationRemaining;
+		bool bouncing;
 
 		public Tunnel (Game game) : base (game)
 		{
@@ -89,16 +90,16 @@ namespace WhatsInTheMountain
 
 		TunnelLayer GenerateLayer ()
 		{
-			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.05f, 0.1f);
+			return new TunnelLayer (random, 0, wallTextures.Count, 0, 1, 0.30f, 0.1f);
 		}
 
 		public override void Update (GameTime gameTime)
 		{
 			KeyboardState ks = Keyboard.GetState ();
 			if (playerRotationRemaining == 0f) {
-				if (ks.IsKeyDown (Keys.Left)) {
+				if (ks.IsKeyDown (Keys.Right)) {
 					playerRotationRemaining = -1f;
-				} else if (ks.IsKeyDown (Keys.Right)) {
+				} else if (ks.IsKeyDown (Keys.Left)) {
 					playerRotationRemaining = 1f;
 				}
 			}
@@ -109,9 +110,32 @@ namespace WhatsInTheMountain
 		public override void Draw (GameTime gameTime)
 		{
 			GraphicsDevice.Clear (Color.Black);
+
 			float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-			tunnelOffset = (tunnelOffset + speed * elapsedSeconds);
+			//simple collision detection
+			if (playerRotationRemaining == 0f) {
+				if (layers [layerOffset].GetObstacleID ((playerRotation + 3) % 8) >= 0) {
+					//prefer to rotate away from adjacent obstacles if possible
+					bool obstacleOnLeft = (layers [layerOffset].GetObstacleID ((playerRotation + 4) % 8) >= 0);
+					bool obstacleOnRight = (layers [layerOffset].GetObstacleID ((playerRotation + 2) % 8) >= 0);
+					if ((!obstacleOnLeft && !obstacleOnRight) || (obstacleOnLeft && obstacleOnRight)) {
+						playerRotationRemaining = random.NextDouble () > 0.5? -1f : 1f;
+					} else if (obstacleOnLeft) {
+						playerRotationRemaining = -1f;
+					} else {
+						playerRotationRemaining = 1f;
+					}
+					bouncing = true;
+				}
+			}
+
+			var tunnelOffsetChange = speed * elapsedSeconds;
+			if (bouncing) {
+				tunnelOffsetChange *= -0f;
+			}
+
+			tunnelOffset = (tunnelOffset + tunnelOffsetChange);
 
 			if (tunnelOffset > 1f) {
 				float floor = (float) Math.Floor (tunnelOffset);
