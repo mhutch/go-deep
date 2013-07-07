@@ -48,15 +48,33 @@ namespace WhatsInTheMountain
 
 		Random random = new Random ();
 
-		float tunnelOffset, dogAnimationOffset;
 		TunnelLayer [] layers = new TunnelLayer [tunnelDepth];
+
+		float tunnelOffset, dogAnimationOffset;
 		int layerOffset;
-
-		float dogDistance = -5;
-
+		float dogDistance;
 		int playerRotation;
 		float playerRotationRemaining;
 		bool bouncing;
+
+		public void Reset ()
+		{
+			ResetValues ();
+			RegenerateTunnel ();
+		}
+
+		void ResetValues ()
+		{
+			dogDistance = -5;
+			playerRotation = 0;
+			playerRotationRemaining = 0f;
+			bouncing = false;
+			Ended = false;
+			Won = false;
+			tunnelOffset = 0;
+			dogAnimationOffset = 0;
+			basicEffect.World = Matrix.Identity;
+		}
 
 		public Tunnel (Game game) : base (game)
 		{
@@ -90,6 +108,8 @@ namespace WhatsInTheMountain
 
 			GraphicsDevice.BlendState = BlendState.NonPremultiplied;
 
+			ResetValues ();
+
 			base.Initialize ();
 		}
 
@@ -112,11 +132,16 @@ namespace WhatsInTheMountain
 			music.Add (Game.Content.Load<SoundEffect> ("music\\song002.m4a"));
 			music.Add (Game.Content.Load<SoundEffect> ("music\\song003.m4a"));
 
+			RegenerateTunnel ();
+
+			base.LoadContent ();
+		}
+
+		void RegenerateTunnel ()
+		{
 			for (int i = 0; i < layers.Length; i++) {
 				layers [i] = GenerateLayer ();
 			}
-
-			base.LoadContent ();
 		}
 
 		TunnelLayer GenerateLayer ()

@@ -92,13 +92,6 @@ namespace WhatsInTheMountain
 			if (!Enabled)
 				return;
 
-			//check for rotation commands
-			KeyboardState ks = Keyboard.GetState ();
-			if (ks.IsKeyDown (Keys.Space)) {
-				Ended = true;
-				musicInstance.Stop ();
-			}
-
 			if (!startedPlaying) {
 				startedPlaying = true;
 				startTime = gameTime.TotalGameTime;
@@ -111,6 +104,12 @@ namespace WhatsInTheMountain
 
 			var elapsedSeconds = (gameTime.TotalGameTime - startTime).TotalSeconds;
 			frameIndex = -1;
+
+			KeyboardState ks = Keyboard.GetState ();
+			if (ks.IsKeyDown (Keys.Space) && elapsedSeconds > 1f) {
+				Ended = true;
+				musicInstance.Stop ();
+			}
 
 			float end = 0;
 			for (int i = 0; i < frames.Count; i++) {

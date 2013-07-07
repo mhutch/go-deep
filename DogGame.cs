@@ -65,24 +65,29 @@ namespace WhatsInTheMountain
 			if (intro.Enabled) {
 				if (intro.Ended) {
 					intro.Enabled = false;
+					tunnel.Reset ();
 					tunnel.Enabled = true;
 				}
 			} else if (win.Enabled) {
 				if (win.Ended) {
 					win.Enabled = false;
+					intro.Reset ();
 					intro.Enabled = true;
 				}
 			} else if (lose.Enabled) {
 				if (lose.Ended) {
 					lose.Enabled = false;
+					intro.Reset ();
 					intro.Enabled = true;
 				}
 			} else if (tunnel.Enabled) {
 				if (tunnel.Ended) {
 					tunnel.Enabled = false;
 					if (tunnel.Won) {
+						win.Reset ();
 						win.Enabled = true;
 					} else {
+						lose.Reset ();
 						lose.Enabled = true;
 					}
 				}
