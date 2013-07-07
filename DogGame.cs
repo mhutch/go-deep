@@ -26,7 +26,7 @@ namespace GoDeep
 			};
 			graphics.IsFullScreen = false;
 
-			title = new Cinematic (this, "music\\title.m4a", Color.Black, true) {
+			title = new Cinematic (this, "music\\title.m4a", Color.Black, true, true) {
 				{ "cine\\titlescreen", 0f },
 			};
 

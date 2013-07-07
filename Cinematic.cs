@@ -21,16 +21,17 @@ namespace GoDeep
 		Color backgroundColor;
 		SoundEffectInstance musicInstance;
 		int frameIndex;
-		bool loop;
+		bool loopLastFrame, loopMusic;
 
 		VertexPositionNormalTexture[] quadVertices = new VertexPositionNormalTexture[4];
 		short[] clockwiseQuadIndices = { 0, 1, 2, 2, 1, 3 };
 
-		public Cinematic (Game game, string musicName, Color backgroundColor, bool loop = false) : base (game)
+		public Cinematic (Game game, string musicName, Color backgroundColor, bool loopLastFrame = false, bool loopMusic = false) : base (game)
 		{
 			this.musicName = musicName;
 			this.backgroundColor = backgroundColor;
-			this.loop = loop;
+			this.loopLastFrame = loopLastFrame;
+			this.loopMusic = loopMusic;
 		}
 
 		public void Add (float duration)
@@ -100,7 +101,7 @@ namespace GoDeep
 				if (music != null) {
 					musicInstance = music.CreateInstance ();
 					musicInstance.Volume = 0.7f;
-					if (loop)
+					if (loopMusic)
 						musicInstance.IsLooped = true;
 					musicInstance.Play ();
 				}
@@ -126,8 +127,8 @@ namespace GoDeep
 			}
 
 			if (frameIndex == -1) {
-				if (loop) {
-					frameIndex = 0;
+				if (loopLastFrame) {
+					frameIndex = frames.Count - 1;
 				} else if (musicInstance.State == SoundState.Stopped) {
 					Ended = true;
 				}
