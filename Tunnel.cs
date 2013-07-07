@@ -20,6 +20,9 @@ namespace WhatsInTheMountain
 		const float bounceBackSpeed = 0.2f;
 		const float bounceBackRotationSpeed = 1f;
 
+		const float winDistance = -1.5f;
+		const float loseDistance = -10f;
+
 		BasicEffect basicEffect;
 		List<Texture2D> wallTextures = new List<Texture2D> ();
 		Texture2D dogTexture;
@@ -110,6 +113,12 @@ namespace WhatsInTheMountain
 				} else if (ks.IsKeyDown (Keys.Left)) {
 					playerRotationRemaining = 1f;
 				}
+			}
+
+			if (dogDistance > winDistance) {
+				Console.WriteLine ("YOU WIN");
+			} else if (dogDistance < loseDistance) {
+				Console.WriteLine ("YOU LOSE");
 			}
 
 			base.Update (gameTime);
