@@ -42,6 +42,6 @@ Copyright (c) 2013 Patrick Rawlings.
 
 #### Art
 
-Copyright (c) 2013 Chester Kwan
+Copyright (c) 2013 Chester Kwan.
 [CC-BY-SA](http://creativecommons.org/licenses/by-sa/2.0/)
 
