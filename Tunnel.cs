@@ -12,6 +12,7 @@ namespace GoDeep
 		const float musicVolume = 0.4f;
 		const float sfxVolume = 1.0f;
 
+		const int bottomSegment = 3;
 		const int tunnelDepth = 20;
 		const float layerDepth = -1f, layerRadius = 1;
 		const float distanceAboveFloor = 0.20f;
@@ -211,10 +212,10 @@ namespace GoDeep
 
 			//simple collision detection, bounce off rocks
 			if (playerRotationRemaining == 0f) {
-				if (layers [layerOffset].GetObstacleID ((playerRotation + 3) % 8) >= 0) {
+				if (layers [layerOffset].GetObstacleID ((playerRotation + bottomSegment) % 8) >= 0) {
 					//prefer to rotate away from adjacent obstacles if possible
-					bool obstacleOnLeft = (layers [layerOffset].GetObstacleID ((playerRotation + 4) % 8) >= 0);
-					bool obstacleOnRight = (layers [layerOffset].GetObstacleID ((playerRotation + 2) % 8) >= 0);
+					bool obstacleOnLeft = (layers [layerOffset].GetObstacleID ((playerRotation + bottomSegment + 1) % 8) >= 0);
+					bool obstacleOnRight = (layers [layerOffset].GetObstacleID ((playerRotation + bottomSegment - 1) % 8) >= 0);
 					if ((!obstacleOnLeft && !obstacleOnRight) || (obstacleOnLeft && obstacleOnRight)) {
 						playerRotationRemaining = random.NextDouble () > 0.5? -1f : 1f;
 					} else if (obstacleOnLeft) {
@@ -344,7 +345,7 @@ namespace GoDeep
 						clockwiseQuadIndices, 0, 2);
 				}
 
-				bool dogInLayer = i == 0 && d >= dogDistance && (d + layerDepth) < dogDistance;
+				bool dogInLayer = i == bottomSegment && d >= dogDistance && (d + layerDepth) < dogDistance;
 
 				var ob = layer.GetObstacleID (i);
 				if (ob < 0 && !dogInLayer) {
