@@ -99,6 +99,10 @@ namespace GoDeep
 				}
 			} else if (title.Enabled) {
 				if (title.Ended) {
+					if (title.Escaped) {
+						Exit ();
+						return;
+					}
 					title.Enabled = false;
 					intro.Reset ();
 					intro.Enabled = true;

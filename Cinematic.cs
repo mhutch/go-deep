@@ -48,10 +48,12 @@ namespace GoDeep
 		}
 
 		public bool Ended { get; private set; }
+		
+		public bool Escaped { get; private set; }
 
 		public void Reset ()
 		{
-			startedPlaying = Ended = false;
+			startedPlaying = Ended = Escaped = false;
 		}
 
 		public override void Initialize ()
@@ -113,6 +115,7 @@ namespace GoDeep
 			KeyboardState ks = Keyboard.GetState ();
 			if ((ks.IsKeyDown (Keys.Space) || ks.IsKeyDown (Keys.Escape)) && elapsedSeconds > 0.5f) {
 				Ended = true;
+				Escaped = ks.IsKeyDown (Keys.Escape);
 				musicInstance.Stop ();
 			}
 
