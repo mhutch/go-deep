@@ -6,7 +6,7 @@ Your dog took the phrase "Go Deep!" too far. Do you have what it
 takes to dodge the obstacles to catch up to your dog before he is
 lost forever?
 
-Insired by the Peter Molyneux quotation:
+Inspired by the Peter Molyneux quotation:
 
 	If you love your dog, we're gonna mess with your
 	mind, man. You're not going to be able to go to bed.
