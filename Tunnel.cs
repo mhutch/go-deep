@@ -322,7 +322,7 @@ namespace GoDeep
 			int dogFrameCount = 10;
 			float dogAnimationLength = 0.5f;
 			//seconds
-			dogAnimationOffset = (dogAnimationOffset + (float)gameTime.ElapsedGameTime.TotalSeconds / dogAnimationLength * speed) % 1f;
+			dogAnimationOffset = (dogAnimationOffset + (float)gameTime.ElapsedGameTime.TotalSeconds / dogAnimationLength) % 1f;
 			int dogFrame = (int)(dogAnimationOffset * (float)dogFrameCount);
 			UpdateLight (Vector3.Forward, dogDistance);
 			RenderAnimatedFlatQuad (new Vector3 (0, -(1f - dogDistanceAboveFloor), dogDistance), dogTexture, 0.5f, 0.5f, dogFrameCount, dogFrame);
