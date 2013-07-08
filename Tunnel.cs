@@ -118,6 +118,8 @@ namespace GoDeep
 			base.Initialize ();
 		}
 
+		public new DogGame Game { get { return (DogGame) base.Game; } }
+
 		protected override void LoadContent ()
 		{
 			wallTextures.Add (Game.Content.Load<Texture2D> ("walls\\dirt2"));
@@ -128,17 +130,17 @@ namespace GoDeep
 			dogTexture = Game.Content.Load<Texture2D> ("sprites\\dog_run");
 			obstacleTextures.Add (Game.Content.Load<Texture2D> ("obst\\rocks"));
 
-			sfxHitBoulder = Game.Content.Load<SoundEffect> ("sfx\\hit-boulder.m4a");
-			sfxLose = Game.Content.Load<SoundEffect> ("sfx\\lose.m4a");
-			sfxPsychedelic = Game.Content.Load<SoundEffect> ("sfx\\psychedelic.m4a");
-			sfxWin = Game.Content.Load<SoundEffect> ("sfx\\win.m4a");
-			sfxRotate = Game.Content.Load<SoundEffect> ("sfx\\rotate.m4a");
-			sfxSpeedUp = Game.Content.Load<SoundEffect> ("sfx\\speed-up.m4a");
-			sfxSlowDown = Game.Content.Load<SoundEffect> ("sfx\\slow-down.m4a");
+			sfxHitBoulder = Game.LoadAudio ("sfx\\hit-boulder");
+			sfxLose = Game.LoadAudio ("sfx\\lose");
+			sfxPsychedelic = Game.LoadAudio ("sfx\\psychedelic");
+			sfxWin = Game.LoadAudio ("sfx\\win");
+			sfxRotate = Game.LoadAudio ("sfx\\rotate");
+			sfxSpeedUp = Game.LoadAudio ("sfx\\speed-up");
+			sfxSlowDown = Game.LoadAudio ("sfx\\slow-down");
 
-			music.Add (Game.Content.Load<SoundEffect> ("music\\song001.m4a"));
-			music.Add (Game.Content.Load<SoundEffect> ("music\\song002.m4a"));
-			music.Add (Game.Content.Load<SoundEffect> ("music\\song003.m4a"));
+			music.Add (Game.LoadAudio ("music\\song001"));
+			music.Add (Game.LoadAudio ("music\\song002"));
+			music.Add (Game.LoadAudio ("music\\song003"));
 
 			RegenerateTunnel ();
 

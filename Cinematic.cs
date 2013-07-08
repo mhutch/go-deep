@@ -3,9 +3,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
-using MonoMac.AudioToolbox;
 using Microsoft.Xna.Framework.Input;
-
 
 namespace GoDeep
 {
@@ -56,6 +54,8 @@ namespace GoDeep
 			startedPlaying = Ended = Escaped = false;
 		}
 
+		public new DogGame Game { get { return (DogGame) base.Game; } }
+
 		public override void Initialize ()
 		{
 			var fov = 90;
@@ -81,7 +81,7 @@ namespace GoDeep
 		protected override void LoadContent ()
 		{
 			if (musicName != null) {
-				music = Game.Content.Load<SoundEffect> (musicName);
+				music = Game.LoadAudio (musicName);
 			}
 			foreach (var frame in frames) {
 				if (frame.ImageName != null) {

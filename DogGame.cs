@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -26,12 +27,12 @@ namespace GoDeep
 			};
 			graphics.IsFullScreen = false;
 
-			title = new Cinematic (this, "music\\title.m4a", Color.Black, true, true) {
+			title = new Cinematic (this, "music\\title", Color.Black, true, true) {
 				{ "cine\\titlescreen", 0f },
 			};
 
 			//18s long
-			intro = new Cinematic (this, "music\\cinematic.m4a", Color.Black) {
+			intro = new Cinematic (this, "music\\cinematic", Color.Black) {
 				{ "cine\\intro1", 3.5f },
 				{ "cine\\intro2", 4.5f },
 				{ "cine\\intro3", 2.5f },
@@ -41,7 +42,7 @@ namespace GoDeep
 			intro.Enabled = false;
 
 			//12s long
-			win = new Cinematic (this, "music\\win.m4a", Color.Black) {
+			win = new Cinematic (this, "music\\win", Color.Black) {
 				{ "cine\\ending1", 2f },
 				{ "cine\\ending2", 2f },
 				{ "cine\\ending3", 2f },
@@ -51,7 +52,7 @@ namespace GoDeep
 			win.Enabled = false;
 
 			//17s long
-			lose = new Cinematic (this, "music\\lose.m4a", Color.Black) {
+			lose = new Cinematic (this, "music\\lose", Color.Black) {
 				{ "cine\\gameover", 16.0f },
 			};
 			lose.Enabled = false;
@@ -110,6 +111,13 @@ namespace GoDeep
 			}
 
 			base.Update (gameTime);
+		}
+
+		public static string AudioExtension = ".m4a";
+
+		public SoundEffect LoadAudio (string name)
+		{
+			return Content.Load<SoundEffect> (name + AudioExtension);
 		}
 	}
 }
