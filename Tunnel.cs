@@ -233,7 +233,7 @@ namespace GoDeep
 			var tunnelOffsetChange = speed * elapsedSeconds;
 
 			if (bouncing) {
-				dogDistance -= tunnelOffsetChange * dogCatchupSpeed;
+				dogDistance -= tunnelOffsetChange * dogCatchupSpeed + tunnelOffsetChange * bounceBackSpeed;
 				tunnelOffset = tunnelOffset + tunnelOffsetChange * -bounceBackSpeed;
 			} else {
 				dogDistance += tunnelOffsetChange * dogCatchupSpeed;
@@ -244,7 +244,7 @@ namespace GoDeep
 				tunnelOffset = 0;
 			}
 
-			//cygle the layer offset if necessary, and fill in new layers
+			//cycle the layer offset if necessary, and fill in new layers
 			if (tunnelOffset > 1f) {
 				float floor = (float) Math.Floor (tunnelOffset);
 				tunnelOffset = tunnelOffset - floor;
