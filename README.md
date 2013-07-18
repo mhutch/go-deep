@@ -37,7 +37,7 @@ Copyright (c) 2013 Michael Hutchinson.
 #### Music
 
 Copyright (c) 2013 Patrick Rawlings.
-[CC-BY-DC-ND](http://creativecommons.org/licenses/by-nc-nd/3.0/)
+[CC-BY-NC-ND](http://creativecommons.org/licenses/by-nc-nd/3.0/)
 
 
 #### Art
