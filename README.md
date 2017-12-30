@@ -23,7 +23,7 @@ Inspired by the Peter Molyneux quotation:
 
 ### Credits
 
-* Programming: Michael Hutchinson
+* Programming: [Mikayla Hutchinson](https://twitter.com/mjhutchinson)
 * Music: Patrick Rawlings
 * Art: Chester Kwan
 
@@ -31,7 +31,7 @@ Inspired by the Peter Molyneux quotation:
 
 #### Code
 
-Copyright (c) 2013 Michael Hutchinson.
+Copyright (c) 2013 Mikayla Hutchinson.
 [MIT/X11](http://opensource.org/licenses/MIT)
 
 #### Music
